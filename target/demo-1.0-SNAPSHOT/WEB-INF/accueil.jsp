@@ -31,6 +31,8 @@
 		{
 	%>
 	<h3 class="text-center">Liste des reservations de tout les clients</h3>
+	<form action="GestionReservation" method="POST">
+
 	<div class="col-8 offset-2">
 		<table class="table">
 			<thead class="thead-dark">
@@ -46,10 +48,10 @@
 			</thead>
 			<tbody>
 			<%
-				List<TupleReservation> reservations = null;
+				List<TupleReservation> reservations = new LinkedList<>();
 				try {
 					reservations = AuberginnHelper.getBiblioInterro(session).getGestionInterrogation()
-							.listerTouteReservations((String)session.getAttribute("userID"));
+							.listerTouteReservations();
 				} catch (SQLException e) {
 					e.printStackTrace();
 				}
@@ -62,7 +64,6 @@
 				<td><%=m.getPrixTotal()%></td>
 				<td><%=m.getDateDebut()%></td>
 				<td><%=m.getDateFin()%></td>
-
 
 			<tr>
 			<tr>
@@ -78,6 +79,26 @@
 			</tbody>
 		</table>
 	</div>
+
+
+	<div class="col-xs-4 text-center offset-3">
+
+
+		<div class="row">
+			<div class="col-md-2">
+				<input class="btn btn-outline-primary" type="SUBMIT" name="Ajout" value="Ajouter une reservation">
+			</div>
+		</div>
+		<%
+			Random rand = new Random();
+			int n = rand.nextInt(90000) + 10000;
+		%>
+		<input type="hidden" id="custId" name="custId" value="<%=n%>">
+
+
+	</div>
+
+	</form>
 	<%
 	} // end if admin
 	else
@@ -85,7 +106,7 @@
 		GestionAubergeInn b = AuberginnHelper.getBiblioInterro(session);
 		List<TupleReservation> reservations = null;
 		try {
-			reservations = b.getGestionInterrogation().listerTouteReservations((String) session.getAttribute("userID"));
+			reservations = b.getGestionInterrogation().listerReservationsUnClient((String) session.getAttribute("userID"));
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}

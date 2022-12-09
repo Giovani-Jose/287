@@ -110,32 +110,17 @@ public class GestionClient
 
 
 
-   /* public void afficherClient(int idClient) throws Exception
+    public TupleClient afficherClient(String user) throws Exception
     {
         try
         {
             // Validations
             // Client existe
-            TupleClient tupleClient = client.getClient(idClient);
+            TupleClient tupleClient = client.getClient(user);
             // Affichage :
             if (tupleClient == null)
-                throw new AuberginnException("Client inexistant: " + idClient);
-            else
-                tupleClient.printInfo();
-
-            // Chercher toutes les réservations du client
-            List<TupleReservation> listeRes = reservation.getReservationClient(idClient);
-            // Affichage :
-            if (!(listeRes.size() > 0))
-                System.out.println("Aucune réservation.");
-            else
-            {
-                System.out.println("Réservations :");
-                for (TupleReservation res :
-                        listeRes) {
-                    res.printInfo();
-                }
-            }
+                throw new AuberginnException("Client inexistant: " + user);
+            return tupleClient;
         }
 
         catch (Exception e)
@@ -144,7 +129,14 @@ public class GestionClient
             throw e;
         }
 
-    }*/
+    }
+
+    public List<TupleReservation> afficherReservation(String user) throws SQLException {
+        // Chercher toutes les réservations du client
+        List<TupleReservation> listeRes = reservation.getReservationClient(user);
+
+        return  listeRes;
+    }
 
     public boolean informationsConnexionValide(String userId, String motDePasse)
             throws SQLException, AuberginnException

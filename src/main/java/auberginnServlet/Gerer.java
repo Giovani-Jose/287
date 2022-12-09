@@ -78,8 +78,16 @@ public class Gerer extends HttpServlet {
                     dispatcher = request.getRequestDispatcher("/WEB-INF/GererChambre.jsp");
                     dispatcher.forward(request, response);
                 }
+                else if(request.getParameter("AfficherChambreLibres")!=null)
+                {
+                    dispatcher = request.getRequestDispatcher("/WEB-INF/AfficherChambresLibres.jsp");
+                    dispatcher.forward(request, response);
+                }
 
                 break;
+
+
+
 
         }
 
@@ -106,6 +114,9 @@ public class Gerer extends HttpServlet {
         }
 
     }
+
+
+
 
     public void destroy() {
         // do nothing.

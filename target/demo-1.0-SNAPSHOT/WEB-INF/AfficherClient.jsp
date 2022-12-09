@@ -4,7 +4,8 @@
 <%@ page import="java.sql.SQLException" %>
 <%@ page import="Auberginn.AuberginnException" %>
 <%@ page import="java.util.Random" %>
-<%@ page import="Auberginn.TupleChambre" %><%--
+<%@ page import="Auberginn.TupleReservation" %>
+<%@ page import="java.util.LinkedList" %><%--
   Created by IntelliJ IDEA.
   User: gtchi
   Date: 2022-12-07
@@ -18,7 +19,7 @@
     <title>IFT287 - AubergeInn</title>
     <meta name="author" content="Vincent Ducharme">
     <meta name="description"
-          content="Page d'accueil de AubergeInn.">
+          content="Page d'accueil du système de gestion de la bilbiothèque.">
 
     <!-- Required meta tags -->
     <meta charset="utf-8">
@@ -44,8 +45,8 @@
         </div>
     </nav>
     <h1 class="text-center">Auberginn</h1>
-    <h3 class="text-center">Liste des chambres</h3>
-    <form action="ActionChambre" method="POST">
+    <h3 class="text-center">Informations sur un client selectionné</h3>
+    <form action="Inscription" method="POST">
 
     <div class="col-8 offset-2">
 
@@ -53,38 +54,37 @@
             <thead class="thead-dark">
             <tr>
                 <th scope="col"></th>
-                <th scope="col">no de chambre</th>
-                <th scope="col">nom de chambre</th>
-                <th scope="col">type de lit</th>
-                <th scope="col">prix de base</th>
+                <th scope="col">no chambre</th>
+                <th scope="col">date debut reservation</th>
+                <th scope="col">date fin reservation</th>
+                <th scope="col">prix total</th>
+
 
             </tr>
             </thead>
             <tbody>
             <%
-                List<TupleChambre> chambres = null;
+                List <TupleReservation> reservations = new LinkedList<>();
                 try {
-                    chambres = AuberginnHelper.getBiblioInterro(session).getGestionInterrogation()
-                            .listerTouteChambres();
-                } catch (SQLException e) {
+                        reservations = AuberginnHelper.getBiblioInterro(session).getGestionClient()
+                            .afficherReservation((String)session.getAttribute("userID"));
+                } catch (Exception e) {
                     e.printStackTrace();
                 }
-                for (TupleChambre chambre : chambres)
+                for (TupleReservation  reservation: reservations)
                 {
             %>
 
             <tr>
 
                 <td>
-                <input type="checkbox" name="SelectionChambre" value = "<%=chambre.getIdChambre()%>">
+                <input type="checkbox" name="Selection" value = "<%=reservation.getIdChambre()%>">
 
 
             </td>
-                <td><%=chambre.getIdChambre()%></td>
-                <td><%=chambre.getNomChambre()%></td>
-                <td><%=chambre.getTypeLit()%></td>
-                <td><%=chambre.getPrixBase()%></td>
-
+                <td><%=reservation.getDateDebut()%></td>
+                <td><%=reservation.getDateFin()%></td>
+                <td><%=reservation.getPrixTotal()%></td>
 
             <tr>
                 <td></td>
@@ -100,23 +100,18 @@
         </table>
     </div>
 
-        <div class="col-xs-4 text-center offset-3">
+        <div class="text-center">
 
+            <%
+                if(reservations.size()==0)
+                {
+            %>
+            <h4>cet client n'a aucune reservation</h4>
 
-        <div class="row">
-            <div class="col-md-2">
-                <input class="btn btn-outline-primary" type="SUBMIT" name="AjoutChambre" value="Ajouter une chambre">
-            </div>
-            <div class="col-md-2">
-                <input class="btn btn-dark" type="SUBMIT" name="AfficherChambre" value="Afficher une chambre">
-            </div>
-            <div class="col-md-2">
-                <input class="btn btn-outline-danger" type="SUBMIT" name="SupprimerChambre" value="Supprimer Chambre">
-            </div>
-            <div class="col-md-2">
-                <input class="btn btn-outline-success" type="SUBMIT" name="AfficherChambreLibres" value="Afficher Chambre libres">
-            </div>
-        </div>
+            <%
+                }
+            %>
+
             <%
                 Random rand = new Random();
                 int n = rand.nextInt(90000) + 10000;

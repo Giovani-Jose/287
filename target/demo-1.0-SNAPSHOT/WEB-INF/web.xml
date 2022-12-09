@@ -64,6 +64,7 @@
         <servlet-name>Gestion</servlet-name>
         <url-pattern>/GestionChambre</url-pattern>
         <url-pattern>/GestionCommodite</url-pattern>
+        <url-pattern>/GestionReservation</url-pattern>
     </servlet-mapping>
 
 

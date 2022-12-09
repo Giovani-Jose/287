@@ -44,8 +44,7 @@
         </div>
     </nav>
     <h1 class="text-center">Auberginn</h1>
-    <h3 class="text-center">Liste des chambres</h3>
-    <form action="ActionChambre" method="POST">
+    <h3 class="text-center">Affichage d'une chambre</h3>
 
     <div class="col-8 offset-2">
 
@@ -56,7 +55,7 @@
                 <th scope="col">no de chambre</th>
                 <th scope="col">nom de chambre</th>
                 <th scope="col">type de lit</th>
-                <th scope="col">prix de base</th>
+                <th scope="col">prix total</th>
 
             </tr>
             </thead>
@@ -64,9 +63,8 @@
             <%
                 List<TupleChambre> chambres = null;
                 try {
-                    chambres = AuberginnHelper.getBiblioInterro(session).getGestionInterrogation()
-                            .listerTouteChambres();
-                } catch (SQLException e) {
+                    chambres = AuberginnHelper.getBiblioInterro(session).getGestionChambre().afficherChambresLibres();
+                } catch (Exception e) {
                     e.printStackTrace();
                 }
                 for (TupleChambre chambre : chambres)
@@ -76,14 +74,13 @@
             <tr>
 
                 <td>
-                <input type="checkbox" name="SelectionChambre" value = "<%=chambre.getIdChambre()%>">
 
 
             </td>
                 <td><%=chambre.getIdChambre()%></td>
                 <td><%=chambre.getNomChambre()%></td>
                 <td><%=chambre.getTypeLit()%></td>
-                <td><%=chambre.getPrixBase()%></td>
+                <td><%=chambre.getPrixTotal()%></td>
 
 
             <tr>
@@ -103,20 +100,6 @@
         <div class="col-xs-4 text-center offset-3">
 
 
-        <div class="row">
-            <div class="col-md-2">
-                <input class="btn btn-outline-primary" type="SUBMIT" name="AjoutChambre" value="Ajouter une chambre">
-            </div>
-            <div class="col-md-2">
-                <input class="btn btn-dark" type="SUBMIT" name="AfficherChambre" value="Afficher une chambre">
-            </div>
-            <div class="col-md-2">
-                <input class="btn btn-outline-danger" type="SUBMIT" name="SupprimerChambre" value="Supprimer Chambre">
-            </div>
-            <div class="col-md-2">
-                <input class="btn btn-outline-success" type="SUBMIT" name="AfficherChambreLibres" value="Afficher Chambre libres">
-            </div>
-        </div>
             <%
                 Random rand = new Random();
                 int n = rand.nextInt(90000) + 10000;
@@ -125,8 +108,6 @@
 
 
         </div>
-    </form>
-
 
 </div>
 

@@ -1,5 +1,6 @@
 package auberginnServlet;
 
+import Auberginn.AuberginnException;
 import Auberginn.GestionAubergeInn;
 
 import javax.servlet.RequestDispatcher;
@@ -10,6 +11,8 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Objects;
 
 
@@ -39,39 +42,88 @@ public class Inscription extends HttpServlet
         if(Objects.equals(randomVal, request.getParameter("custId")))
 
         {
+
             RequestDispatcher dispatcher = request.getRequestDispatcher("/WEB-INF/GererMembre.jsp");
             dispatcher.forward(request, response);
             return;
         }
 
+        request.setAttribute("listeMessageErreur",null);
 
-        if(request.getParameter("Supprimer")!=null)
+        if(request.getParameter("AfficherClient")!=null)
         {
-            if(request.getParameter("Selection")!=null)
-            {
-                String[] res = request.getParameterValues("Selection");
-                HttpSession session = request.getSession();
 
-                for(String user:res)
+            try {
+                if(request.getParameter("Selection")!=null)
                 {
-                    GestionAubergeInn aubergeUpdate = AuberginnHelper.getBiblioUpdate(session);
-                    synchronized (aubergeUpdate)
-                    {
-                        try {
-                            aubergeUpdate.getGestionClient().desinscrire(user);
-                            randomVal = request.getParameter("custId");
-
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                        }
-                    }
+                    RequestDispatcher dispatcher = request.getRequestDispatcher("/WEB-INF/AfficherClient.jsp");
+                    dispatcher.forward(request, response);
+                    return;
+                }
+                else
+                {
+                    throw new AuberginnException("Vous devez selectionner le client a afficher");
 
                 }
 
+            }
+            catch (Exception e)
+            {
+                List<String> listeMessageErreur = new LinkedList<String>();
+                listeMessageErreur.add(e.getMessage());
+                request.setAttribute("listeMessageErreur", listeMessageErreur);
                 RequestDispatcher dispatcher = request.getRequestDispatcher("/WEB-INF/GererMembre.jsp");
                 dispatcher.forward(request, response);
-                return;
+
+                // pour déboggage seulement : afficher tout le contenu de l'exception
+                e.printStackTrace();;
             }
+
+
+        }
+
+
+        if(request.getParameter("Supprimer")!=null)
+        {
+            try {
+                if (request.getParameter("Selection") != null) {
+                    String[] res = request.getParameterValues("Selection");
+                    HttpSession session = request.getSession();
+
+                    for (String user : res) {
+                        GestionAubergeInn aubergeUpdate = AuberginnHelper.getBiblioUpdate(session);
+                        synchronized (aubergeUpdate) {
+                            try {
+                                aubergeUpdate.getGestionClient().desinscrire(user);
+                                randomVal = request.getParameter("custId");
+
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
+                        }
+
+                    }
+
+                    RequestDispatcher dispatcher = request.getRequestDispatcher("/WEB-INF/GererMembre.jsp");
+                    dispatcher.forward(request, response);
+                    return;
+                } else {
+                    throw new AuberginnException("Vous devez selectionner le client a supprimer");
+
+                }
+            }
+             catch (Exception e)
+            {
+                List<String> listeMessageErreur = new LinkedList<String>();
+                listeMessageErreur.add(e.getMessage());
+                request.setAttribute("listeMessageErreur", listeMessageErreur);
+                RequestDispatcher dispatcher = request.getRequestDispatcher("/WEB-INF/GererMembre.jsp");
+                dispatcher.forward(request, response);
+
+                // pour déboggage seulement : afficher tout le contenu de l'exception
+                e.printStackTrace();;
+            }
+
         }
         HttpSession session = request.getSession();
         if(session.getAttribute("admin")==null)

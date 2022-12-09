@@ -3,7 +3,8 @@
 <%@ page import="java.util.List" %>
 <%@ page import="java.sql.SQLException" %>
 <%@ page import="Auberginn.AuberginnException" %>
-<%@ page import="java.util.Random" %><%--
+<%@ page import="java.util.Random" %>
+<%@ page import="java.util.LinkedList" %><%--
   Created by IntelliJ IDEA.
   User: gtchi
   Date: 2022-12-07
@@ -61,13 +62,11 @@
             </thead>
             <tbody>
             <%
-                List<TupleClient> clients = null;
+                List<TupleClient> clients = new LinkedList<>();
                 try {
                     clients = AuberginnHelper.getBiblioInterro(session).getGestionClient()
                             .getListClients(false);
-                } catch (SQLException e) {
-                    e.printStackTrace();
-                } catch (AuberginnException e) {
+                } catch (SQLException | AuberginnException e) {
                     e.printStackTrace();
                 }
                 for (TupleClient m : clients)
@@ -101,15 +100,18 @@
         </table>
     </div>
 
-        <div class="col-md-4 offset-md-4">
+        <div class="col-xs-4 text-center offset-3">
 
 
         <div class="row">
-            <div class="col-md-6">
+            <div class="col-md-2">
                 <input class="btn btn-outline-primary" type="SUBMIT" name="Ajout" value="Ajouter un client">
             </div>
-            <div class="col-md-6 text-right">
+            <div class="col-md-2 ">
                 <input class="btn btn-outline-danger" type="SUBMIT" name="Supprimer" value="Supprimer un client">
+            </div>
+            <div class="col-md-2">
+                <input class="btn btn-dark" type="SUBMIT" name="AfficherClient" value="Afficher un client">
             </div>
         </div>
             <%
@@ -125,7 +127,10 @@
 
 </div>
 
-
+<br>
+<%-- inclusion d'une autre page pour l'affichage des messages d'erreur--%>
+<jsp:include page="/WEB-INF/messageErreur.jsp" />
+<br>
 
 <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
         integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
