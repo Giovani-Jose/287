@@ -51,7 +51,7 @@
         <servlet-name>Gerer</servlet-name>
         <url-pattern>/GererMembre</url-pattern>
         <url-pattern>/GererChambre</url-pattern>
-        <url-pattern>/ajoutChambre</url-pattern>
+        <url-pattern>/ActionChambre</url-pattern>
 
     </servlet-mapping>
 

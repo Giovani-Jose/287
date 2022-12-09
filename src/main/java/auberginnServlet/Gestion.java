@@ -1,5 +1,6 @@
 package auberginnServlet;
 
+import Auberginn.AuberginnException;
 import Auberginn.GestionAubergeInn;
 
 import javax.servlet.RequestDispatcher;
@@ -10,6 +11,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
 
@@ -32,7 +34,10 @@ public class Gestion extends HttpServlet
     private String randomVal;
     private static final String ajoutChambre = "AjoutChambre";
     private static final String SupprimerChambre = "SupprimerChambre";
+    private static final String appelVersGestionChambre = "/GestionChambre";
+    private static final String appelVersGestionCommodite = "/GestionCommodite";
     private List<String>transactions;
+    private List<String> appelUrl;
 
     @Override
     public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
@@ -43,35 +48,78 @@ public class Gestion extends HttpServlet
         String lastPath = url.substring(url.lastIndexOf('/'));
         String transaction;
 
-        switch(lastPath)
-        {
-            case "/GestionChambre":
-                transaction = verifierTransaction(request,response);
-                executerTransactionChambre(transaction,request,response);
-                break;
+        String recupererAppel = verifierAuteurDeLappel(lastPath);
 
+
+        //permet d'eviter de soumettre a nouveau l'action lorsque la page est reloadé
+        if(Objects.equals(randomVal, request.getParameter("custId")))
+
+        {
+           for(String elm:appelUrl)
+           {
+               if(elm.equals(recupererAppel))redirectionVersAuteurAppel(request,response,elm);
+               return;
+           }
         }
 
 
+        switch(recupererAppel)
+        {
+            case appelVersGestionChambre:
+                transaction = determinerTransaction(request,response);
 
+                try {
+                    verifierChampChambre(request,response);
+                } catch (AuberginnException e) {
+                    e.printStackTrace();
+                }
+                executerTransactionChambre(transaction,request,response);
+                break;
 
+            case appelVersGestionCommodite:
+                break;
+
+        }
 
     }
 
     public void loadTransaction()
     {
+
+        //transactions
         transactions = new ArrayList<>();
         transactions.add(ajoutChambre);
         transactions.add(SupprimerChambre);
+
+        //url
+        appelUrl = new ArrayList<>();
+        appelUrl.add(appelVersGestionChambre);
+        appelUrl.add(appelVersGestionCommodite);
     }
 
-    public String verifierTransaction(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    public String determinerTransaction(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
         for(String transaction:transactions)
         {
             if(request.getParameter(transaction)!=null)return transaction;
         }
         return null;
+    }
+
+    public String verifierAuteurDeLappel(String lastPath)
+    {
+        switch(lastPath)
+        {
+            case appelVersGestionChambre:
+                return appelVersGestionChambre;
+
+            case appelVersGestionCommodite:
+                return appelVersGestionCommodite;
+
+            default:
+                return null;
+
+        }
     }
 
     public void executerTransactionChambre(String transaction,HttpServletRequest request,HttpServletResponse response) throws ServletException, IOException {
@@ -86,21 +134,66 @@ public class Gestion extends HttpServlet
                {
                    try {
                        aubergeUpdate.getGestionChambre().ajouterChambre(Integer.parseInt(request.getParameter("chambreId")),
-                               request.getParameter("nomChambre"),request.getParameter("typeLit"),Float.parseFloat(request.getParameter("prixDeBase")));
+                               request.getParameter("nomChambre"),request.getParameter("typeLit"),Float.parseFloat(request.getParameter("prixDeBase")),request,response);
                        randomVal = request.getParameter("custId");
-                       redirectionVersGestionChambre(request,response);
-
                    } catch (Exception e) {
                        e.printStackTrace();
                    }
                }
+               redirectionVersAuteurAppel(request,response,appelVersGestionChambre);
+
                break;
        }
+
+
     }
 
-    public void redirectionVersGestionChambre(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        RequestDispatcher dispatcher = request.getRequestDispatcher("/WEB-INF/GererChambre.jsp");
-        dispatcher.forward(request, response);
+    public void redirectionVersAuteurAppel(HttpServletRequest request, HttpServletResponse response,String auteurAppel) throws ServletException, IOException {
+
+        if(Objects.equals(auteurAppel, appelVersGestionChambre))
+        {
+            RequestDispatcher dispatcher = request.getRequestDispatcher("/WEB-INF/GererChambre.jsp");
+            dispatcher.forward(request, response);
+        }
+
+    }
+
+    public void verifierChampChambre(HttpServletRequest request,HttpServletResponse response) throws AuberginnException, ServletException, IOException {
+
+        try {
+            String chambreId = request.getParameter("chambreId");
+            String nomChambre = request.getParameter("nomChambre");
+            String typeLit = request.getParameter("typeLit");
+            String prixDeBase = request.getParameter("prixDeBase");
+
+
+            if (chambreId == null || chambreId.equals(""))
+                throw new AuberginnException("Vous devez entrer un id pour la chambre");
+
+            if (nomChambre == null || nomChambre.equals(""))
+                throw new AuberginnException("Vous devez entrer un nom pour la chambre");
+
+            if (typeLit == null || typeLit.equals(""))
+                throw new AuberginnException("Vous devez entrer un type de lit pour la chambre");
+
+            if (prixDeBase == null || prixDeBase.equals("")) {
+                throw new AuberginnException("Vous devez entrer un prix de base");
+            }
+        }
+          catch (Exception e)
+        {
+            List<String> listeMessageErreur = new LinkedList<String>();
+            listeMessageErreur.add(e.getMessage());
+            request.setAttribute("listeMessageErreur", listeMessageErreur);
+            RequestDispatcher dispatcher = request.getRequestDispatcher("/WEB-INF/creerChambre.jsp");
+            dispatcher.forward(request, response);
+            // pour déboggage seulement : afficher tout le contenu de l'exception
+            e.printStackTrace();;
+        }
+
+
+
+
     }
 
     // Dans les formulaires, on utilise la m�thode POST

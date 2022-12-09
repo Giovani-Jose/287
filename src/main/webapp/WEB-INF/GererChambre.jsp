@@ -45,7 +45,7 @@
     </nav>
     <h1 class="text-center">Auberginn</h1>
     <h3 class="text-center">Liste des chambres</h3>
-    <form action="ajoutChambre" method="POST">
+    <form action="ActionChambre" method="POST">
 
     <div class="col-8 offset-2">
 
@@ -76,7 +76,7 @@
             <tr>
 
                 <td>
-                <input type="checkbox" name="Selection" value = "<%=chambre.getIdChambre()%>">
+                <input type="checkbox" name="SelectionChambre" value = "<%=chambre.getIdChambre()%>">
 
 
             </td>

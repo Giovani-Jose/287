@@ -34,6 +34,8 @@ public class Inscription extends HttpServlet
     public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
     {
 
+        //permet d'eviter de soumettre a nouveau l'action lorsque la page est reloadé
+
         if(Objects.equals(randomVal, request.getParameter("custId")))
 
         {

@@ -1,7 +1,11 @@
 package Auberginn;
 
 
+import javax.servlet.RequestDispatcher;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.util.Calendar;
+import java.util.LinkedList;
 import java.util.List;
 
 public class GestionChambre {
@@ -19,7 +23,7 @@ public class GestionChambre {
         this.reservation = reservation;
     }
 
-    public void ajouterChambre(int idChambre, String nomChambre, String typeLit, float prix)
+    public void ajouterChambre(int idChambre, String nomChambre, String typeLit, float prix, HttpServletRequest request, HttpServletResponse response)
             throws Exception
     {
         try
@@ -36,6 +40,13 @@ public class GestionChambre {
         }
         catch (Exception e)
         {
+            List<String> listeMessageErreur = new LinkedList<String>();
+            listeMessageErreur.add(e.getMessage());
+            request.setAttribute("listeMessageErreur", listeMessageErreur);
+            RequestDispatcher dispatcher = request.getRequestDispatcher("/WEB-INF/creerChambre.jsp");
+            dispatcher.forward(request, response);
+            // pour déboggage seulement : afficher tout le contenu de l'exception
+            e.printStackTrace();;
             connex.rollback();
             throw e;
         }

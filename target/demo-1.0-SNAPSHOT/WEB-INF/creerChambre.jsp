@@ -36,9 +36,13 @@
         <input class="form-control" type="TEXT" name="prixDeBase" value="<%= request.getAttribute("prixDeBase") != null ? (String)request.getAttribute("prixDeBase") : "" %>">
       </div>
 
+      <%
+        Random rand = new Random();
+        int n = rand.nextInt(90000) + 10000;
+      %>
 
-
-      <input class="btn btn-primary" type="SUBMIT" name="creationChambre" value="Ajouter la chambre">
+      <input class="btn btn-primary" type="SUBMIT" name="AjoutChambre" value="Ajouter la chambre">
+      <input type="hidden" id="custId" name="custId" value="<%=n%>">
     </form>
   </div>
 </div>
