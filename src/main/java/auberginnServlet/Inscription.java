@@ -56,6 +56,10 @@ public class Inscription extends HttpServlet
             try {
                 if(request.getParameter("Selection")!=null)
                 {
+
+                    String[] val = request.getParameterValues("Selection");
+
+                  request.setAttribute("userIDAffichageClient",val[0]);
                     RequestDispatcher dispatcher = request.getRequestDispatcher("/WEB-INF/AfficherClient.jsp");
                     dispatcher.forward(request, response);
                     return;

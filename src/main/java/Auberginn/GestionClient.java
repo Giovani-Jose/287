@@ -133,9 +133,8 @@ public class GestionClient
 
     public List<TupleReservation> afficherReservation(String user) throws SQLException {
         // Chercher toutes les réservations du client
-        List<TupleReservation> listeRes = reservation.getReservationClient(user);
 
-        return  listeRes;
+        return reservation.getReservationClient(user);
     }
 
     public boolean informationsConnexionValide(String userId, String motDePasse)

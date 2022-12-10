@@ -66,8 +66,11 @@
             <%
                 List <TupleReservation> reservations = new LinkedList<>();
                 try {
+                       //HttpSession currentSession = request.getSession();
+                       String id = (String)request.getAttribute("userIDAffichageClient");
+                       //System.out.println(id);
                         reservations = AuberginnHelper.getBiblioInterro(session).getGestionClient()
-                            .afficherReservation((String)session.getAttribute("userID"));
+                            .afficherReservation(id);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -82,6 +85,7 @@
 
 
             </td>
+                <td><%=reservation.getIdChambre()%></td>
                 <td><%=reservation.getDateDebut()%></td>
                 <td><%=reservation.getDateFin()%></td>
                 <td><%=reservation.getPrixTotal()%></td>
