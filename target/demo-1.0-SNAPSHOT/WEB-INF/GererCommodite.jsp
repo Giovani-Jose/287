@@ -36,17 +36,10 @@
 <body>
 <div class="contain">
 
-  <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-
-    <div class="navbar-collapse collapse justify-content-end">
-      <ul class="nav navbar-nav navbar-right">
-        <li><a class="nav-item nav-link" href="Logout">Déconnexion</a></li>
-      </ul>
-    </div>
-  </nav>
+  <jsp:include page="/WEB-INF/navigation.jsp" />
   <h1 class="text-center">Auberginn</h1>
   <h3 class="text-center">Liste des commodités</h3>
-  <form >
+  <form action="ActionCommodite" method="POST">
 
     <div class="col-8 offset-2">
 
@@ -77,7 +70,7 @@
         <tr>
 
           <td>
-            <input type="checkbox" name="SelectionCommodite" value = "<%=com.getIdCommodite()%>">
+            <input type="radio" name="SelectionCommodite" value = "<%=com.getIdCommodite()%>">
 
 
           </td>
@@ -99,12 +92,18 @@
       </table>
     </div>
 
-    <div class="col-md-4 offset-md-4">
+    <div class="col-xs-4 text-center offset-3">
 
 
       <div class="row">
-        <div class="col-md-6">
+        <div class="col-md-2">
           <input class="btn btn-outline-primary" type="SUBMIT" name="AjoutCommodite" value="Ajouter une commodite">
+        </div>
+        <div class="col-md-2">
+          <input class="btn btn-dark" type="SUBMIT" name="InclureCommodite" value="Inclure commodite">
+        </div>
+        <div class="col-md-2">
+          <input class="btn btn-outline-danger" type="SUBMIT" name="EnleverCommodite" value="Enlever commodite">
         </div>
       </div>
       <%
