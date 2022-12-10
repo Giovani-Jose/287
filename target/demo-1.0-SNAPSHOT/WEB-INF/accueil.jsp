@@ -104,7 +104,7 @@
 	else
 	{
 		GestionAubergeInn b = AuberginnHelper.getBiblioInterro(session);
-		List<TupleReservation> reservations = null;
+		List<TupleReservation> reservations = new LinkedList<>();
 		try {
 			reservations = b.getGestionInterrogation().listerReservationsUnClient((String) session.getAttribute("userID"));
 		} catch (SQLException e) {
@@ -116,7 +116,6 @@
 		<table class="table">
 			<thead class="thead-dark">
 			<tr>
-				<th scope="col">#</th>
 				<th scope="col">numero de chambre</th>
 				<th scope="col">Prix total</th>
 				<th scope="col">Date de debut</th>
