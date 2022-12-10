@@ -41,7 +41,10 @@ public class Gerer extends HttpServlet {
                 dispatcher = request.getRequestDispatcher("/WEB-INF/GererChambre.jsp");
                 dispatcher.forward(request, response);
                 break;
-
+            case "/GererCommodite":
+                dispatcher = request.getRequestDispatcher("/WEB-INF/GererCommodite.jsp");
+                dispatcher.forward(request, response);
+                break;
         }
 
     }

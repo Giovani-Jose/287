@@ -2,6 +2,7 @@ package auberginnServlet;
 
 import Auberginn.Connexion;
 import Auberginn.TupleChambre;
+import Auberginn.TupleCommodite;
 import Auberginn.TupleReservation;
 
 import java.sql.PreparedStatement;
@@ -42,6 +43,7 @@ public class GestionInterrogation
     private PreparedStatement stmtListeTousLivres;
     private PreparedStatement stmtListeTousChambre;
     private PreparedStatement stmtListeTousReservation;
+    private PreparedStatement stmtListeTousCommodite;
     private Connexion cx;
 
     /**
@@ -67,6 +69,9 @@ public class GestionInterrogation
 
         stmtListeTousChambre = cx.getConnection().prepareStatement(
                 "SELECT * FROM chambre");
+
+        stmtListeTousCommodite = cx.getConnection().prepareStatement(
+                "SELECT * FROM commodite");
     }
 
     /**
@@ -167,4 +172,19 @@ public class GestionInterrogation
         return chambres;
     }
 
+    public List<TupleCommodite> listerToutesCommodites() throws SQLException
+    {
+        List<TupleCommodite> cs = new LinkedList<TupleCommodite>();
+
+        ResultSet rset = stmtListeTousCommodite.executeQuery();
+        while (rset.next())
+        {
+            TupleCommodite c = new TupleCommodite(rset.getInt("idCommodite"), rset.getString("description"),
+                    rset.getFloat("surplisPrix"));
+            cs.add(c);
+        }
+        rset.close();
+        cx.commit();
+        return cs;
+    }
 }
