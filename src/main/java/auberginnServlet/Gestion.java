@@ -32,6 +32,7 @@ public class Gestion extends HttpServlet
     private static final long serialVersionUID = 1L;
     private String randomVal;
     private static final String ajoutChambre = "AjoutChambre";
+    private static final String ajoutCommodite = "AjoutCommodite";
     private static final String ajoutReservation = "AjoutReservation";
     private static final String SupprimerChambre = "SupprimerChambre";
     private static final String appelVersGestionChambre = "/GestionChambre";
@@ -91,10 +92,16 @@ public class Gestion extends HttpServlet
                 break;
 
             case appelVersGestionCommodite:
+                transaction = determinerTransaction(request,response);
+
+                try {
+                    verifierChampCommodite(request,response);
+                } catch (AuberginnException e) {
+                    e.printStackTrace();
+                }
+                executerTransactionCommodite(transaction,request,response);
                 break;
-
         }
-
     }
 
     public void loadTransaction()
@@ -103,6 +110,7 @@ public class Gestion extends HttpServlet
         //transactions
         transactions = new ArrayList<>();
         transactions.add(ajoutChambre);
+        transactions.add(ajoutCommodite);
         transactions.add(SupprimerChambre);
         transactions.add(ajoutReservation);
 
@@ -167,6 +175,30 @@ public class Gestion extends HttpServlet
 
     }
 
+    public void executerTransactionCommodite(String transaction,HttpServletRequest request,HttpServletResponse response) throws ServletException, IOException {
+
+        HttpSession session = request.getSession();
+        GestionAubergeInn aubergeUpdate = AuberginnHelper.getBiblioUpdate(session);
+
+        switch(transaction)
+        {
+            case ajoutCommodite:
+                synchronized (aubergeUpdate)
+                {
+                    try {
+                        aubergeUpdate.getGestionCommodite().ajouterCommodite(Integer.parseInt(request.getParameter("commoditeId")),
+                                request.getParameter("description"), Float.parseFloat(request.getParameter("prixSurplus")),request,response);
+                        randomVal = request.getParameter("custId");
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+                redirectionVersAuteurAppel(request,response,appelVersGestionCommodite);
+
+                break;
+        }
+    }
+
 
     public void executerTransactionReservation(String transaction,HttpServletRequest request,HttpServletResponse response) throws ServletException, IOException {
 
@@ -210,6 +242,12 @@ public class Gestion extends HttpServlet
             dispatcher.forward(request, response);
         }
 
+        if(Objects.equals(auteurAppel, appelVersGestionCommodite))
+        {
+            RequestDispatcher dispatcher = request.getRequestDispatcher("/WEB-INF/GererCommodite.jsp");
+            dispatcher.forward(request, response);
+        }
+
     }
 
     public void verifierChampChambre(HttpServletRequest request,HttpServletResponse response) throws AuberginnException, ServletException, IOException {
@@ -248,6 +286,36 @@ public class Gestion extends HttpServlet
 
 
 
+    }
+
+    public void verifierChampCommodite(HttpServletRequest request,HttpServletResponse response) throws AuberginnException, ServletException, IOException {
+
+        try {
+            String commoditeId = request.getParameter("commoditeId");
+            String desc = request.getParameter("description");
+            String prix = request.getParameter("prixSurplus");
+
+
+            if (commoditeId == null || commoditeId.equals(""))
+                throw new AuberginnException("Vous devez entrer un id pour la commodité");
+
+            if (desc == null || desc.equals(""))
+                throw new AuberginnException("Vous devez entrer une description pour la commodité");
+
+            if (prix == null || prix.equals("")) {
+                throw new AuberginnException("Vous devez entrer un prix de surplus");
+            }
+        }
+        catch (Exception e)
+        {
+            List<String> listeMessageErreur = new LinkedList<String>();
+            listeMessageErreur.add(e.getMessage());
+            request.setAttribute("listeMessageErreur", listeMessageErreur);
+            RequestDispatcher dispatcher = request.getRequestDispatcher("/WEB-INF/ajoutCommodite.jsp");
+            dispatcher.forward(request, response);
+            // pour déboggage seulement : afficher tout le contenu de l'exception
+            e.printStackTrace();;
+        }
     }
 
     public void verifierChampReservation(HttpServletRequest request,HttpServletResponse response) throws AuberginnException, ServletException, IOException {

@@ -53,6 +53,7 @@
         <url-pattern>/GererChambre</url-pattern>
         <url-pattern>/GererCommodite</url-pattern>
         <url-pattern>/ActionChambre</url-pattern>
+        <url-pattern>/ActionCommodite</url-pattern>
 
     </servlet-mapping>
 

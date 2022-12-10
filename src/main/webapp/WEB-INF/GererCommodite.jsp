@@ -36,17 +36,10 @@
 <body>
 <div class="contain">
 
-  <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-
-    <div class="navbar-collapse collapse justify-content-end">
-      <ul class="nav navbar-nav navbar-right">
-        <li><a class="nav-item nav-link" href="Logout">Déconnexion</a></li>
-      </ul>
-    </div>
-  </nav>
+  <jsp:include page="/WEB-INF/navigation.jsp" />
   <h1 class="text-center">Auberginn</h1>
   <h3 class="text-center">Liste des commodités</h3>
-  <form >
+  <form action="ActionCommodite" method="POST">
 
     <div class="col-8 offset-2">
 
@@ -105,6 +98,12 @@
       <div class="row">
         <div class="col-md-6">
           <input class="btn btn-outline-primary" type="SUBMIT" name="AjoutCommodite" value="Ajouter une commodite">
+        </div>
+        <div class="col-md-2">
+          <input class="btn btn-dark" type="SUBMIT" name="InclureCommodite" value="Inclure une commodite">
+        </div>
+        <div class="col-md-2">
+          <input class="btn btn-outline-danger" type="SUBMIT" name="EnleverCommodite" value="Enlever une commodite">
         </div>
       </div>
       <%

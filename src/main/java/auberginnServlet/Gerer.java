@@ -89,6 +89,26 @@ public class Gerer extends HttpServlet {
 
                 break;
 
+            case "/ActionCommodite":
+
+                if(request.getParameter("AjoutCommodite")!=null)
+                {
+                    dispatcher = request.getRequestDispatcher("/WEB-INF/ajoutCommodite.jsp");
+                    dispatcher.forward(request, response);
+                }
+                else if(request.getParameter("InclureCommodite")!=null && request.getParameter("SelectionCommodite")!=null)
+                {
+                    actionSuppChambre(request);
+                    dispatcher = request.getRequestDispatcher("/WEB-INF/GererChambre.jsp");
+                    dispatcher.forward(request, response);
+                }
+                else if(request.getParameter("EnleverCommodite")!=null)
+                {
+                    dispatcher = request.getRequestDispatcher("/WEB-INF/AfficherChambresLibres.jsp");
+                    dispatcher.forward(request, response);
+                }
+
+                break;
 
 
 
