@@ -43,6 +43,7 @@ public class GestionInterrogation
     private PreparedStatement stmtListeTousLivres;
     private PreparedStatement stmtListeTousChambre;
     private PreparedStatement stmtListeTousReservation;
+    private PreparedStatement stmtListeReservationUnClient;
     private PreparedStatement stmtListeTousCommodite;
     private Connexion cx;
 
@@ -65,7 +66,10 @@ public class GestionInterrogation
                 "select t1.idLivre, t1.titre, t1.auteur, t1.utilisateur, t1.datePret " + "from livre t1");
         
         stmtListeTousReservation = cx.getConnection().prepareStatement(
-                "SELECT * FROM reservation WHERE utilisateur = ?");
+                "SELECT * FROM reservation");
+
+        stmtListeReservationUnClient = cx.getConnection().prepareStatement(
+                "SELECT * FROM reservation where utilisateur = ?");
 
         stmtListeTousChambre = cx.getConnection().prepareStatement(
                 "SELECT * FROM chambre");
@@ -140,12 +144,26 @@ public class GestionInterrogation
     /**
      * Affiche tous les livres de la BD pour un membre
      */
-    public List<TupleReservation> listerTouteReservations(String utilisateur) throws SQLException
+    public List<TupleReservation> listerTouteReservations() throws SQLException
     {
         List<TupleReservation> reservations = new LinkedList<TupleReservation>();
         
-        stmtListeTousReservation.setString(1, utilisateur);
         ResultSet rset = stmtListeTousReservation.executeQuery();
+        while (rset.next())
+        {
+            TupleReservation reservation = new TupleReservation(rset.getString("utilisateur"), rset.getInt("idChambre"), rset.getFloat("prixTotal"), rset.getDate("dateDebut"),  rset.getDate("dateFin"));
+            reservations.add(reservation);
+        }
+        rset.close();
+        cx.commit();
+        return reservations;
+    }
+
+    public List<TupleReservation> listerReservationsUnClient(String utilisateur) throws SQLException
+    {
+        List<TupleReservation> reservations = new LinkedList<TupleReservation>();
+
+        ResultSet rset = stmtListeReservationUnClient.executeQuery();
         while (rset.next())
         {
             TupleReservation reservation = new TupleReservation(rset.getString("utilisateur"), rset.getInt("idChambre"), rset.getFloat("prixTotal"), rset.getDate("dateDebut"),  rset.getDate("dateFin"));
@@ -187,4 +205,5 @@ public class GestionInterrogation
         cx.commit();
         return cs;
     }
+
 }

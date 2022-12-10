@@ -100,15 +100,21 @@
         </table>
     </div>
 
-        <div class="col-md-4 offset-md-4">
+        <div class="col-xs-4 text-center offset-3">
 
 
         <div class="row">
-            <div class="col-md-6">
+            <div class="col-md-2">
                 <input class="btn btn-outline-primary" type="SUBMIT" name="AjoutChambre" value="Ajouter une chambre">
             </div>
-            <div class="col-md-6 text-right">
-                <input class="btn btn-outline-danger" type="SUBMIT" name="SupprimerChambre" value="Supprimer une chambre">
+            <div class="col-md-2">
+                <input class="btn btn-dark" type="SUBMIT" name="AfficherChambre" value="Afficher une chambre">
+            </div>
+            <div class="col-md-2">
+                <input class="btn btn-outline-danger" type="SUBMIT" name="SupprimerChambre" value="Supprimer Chambre">
+            </div>
+            <div class="col-md-2">
+                <input class="btn btn-outline-success" type="SUBMIT" name="AfficherChambreLibres" value="Afficher Chambre libres">
             </div>
         </div>
             <%

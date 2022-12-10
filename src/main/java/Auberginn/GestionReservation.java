@@ -1,6 +1,10 @@
 package Auberginn;
 
-import java.sql.Date;
+import javax.servlet.RequestDispatcher;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.util.Date;
+import java.util.LinkedList;
 import java.util.List;
 
 public class GestionReservation
@@ -29,7 +33,7 @@ public class GestionReservation
     /**
      * Réservation d'une chambre par un client.
      */
-    public void reserver(int idClient, int idChambre,String utilisateur, Date dateDebut, Date dateFin)
+    public void reserver(String utilisateur, int idChambre, Date dateDebut, Date dateFin, HttpServletRequest request, HttpServletResponse response)
             throws Exception
     {
         try
@@ -37,7 +41,7 @@ public class GestionReservation
             // Vérifier que le client existe
             TupleClient tupleClient = client.getClient(utilisateur);
             if (tupleClient == null)
-                throw new AuberginnException("Client inexistant: " + idClient);
+                throw new AuberginnException("Client inexistant: " + utilisateur);
 
             // Vérifier que la chambre existe
             TupleChambre tupleChambre = chambre.getChambre(idChambre);
@@ -76,13 +80,21 @@ public class GestionReservation
             }
 
             // Creation de la reservation
-            reservation.reserver(idClient, idChambre,utilisateur, prixTotal, dateDebut, dateFin);
+
+            reservation.reserver(utilisateur, idChambre, prixTotal, new java.sql.Date(dateDebut.getTime()), new java.sql.Date(dateFin.getTime()));
 
             // Commit
             cx.commit();
         }
         catch (Exception e)
         {
+            List<String> listeMessageErreur = new LinkedList<String>();
+            listeMessageErreur.add(e.getMessage());
+            request.setAttribute("listeMessageErreur", listeMessageErreur);
+            RequestDispatcher dispatcher = request.getRequestDispatcher("/WEB-INF/creerReservation.jsp");
+            dispatcher.forward(request, response);
+            // pour déboggage seulement : afficher tout le contenu de l'exception
+            e.printStackTrace();;
             cx.rollback();
             throw e;
         }

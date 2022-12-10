@@ -89,17 +89,19 @@ public class GestionChambre {
         }
     }
 
-    public void afficherChambresLibres() throws Exception
+    public List<TupleChambre> afficherChambresLibres() throws Exception
     {
         try
         {
             List<TupleChambre> listeChambres = chambre.getFreeRooms();
             if (!(listeChambres.size() > 0))
                 System.out.println("Aucune chambre libre");
-            for (TupleChambre ch :
+
+            return listeChambres;
+           /* for (TupleChambre ch :
                     listeChambres) {
                 System.out.println("Chambre : " + ch.getIdChambre() + ", " + ch.getPrixTotal() + "$");
-            }
+            }*/
         }
 
         catch (Exception e)
@@ -109,7 +111,7 @@ public class GestionChambre {
         }
     }
 
-    public void afficherChambre(int idChambre) throws Exception
+    public TupleChambre afficherChambre(int idChambre) throws Exception
     {
         try
         {
@@ -119,8 +121,9 @@ public class GestionChambre {
             // Affichage
             if (tupleChambre == null)
                 throw new AuberginnException("Chambre inexistante: " + idChambre);
-            else
-                tupleChambre.printInfo();
+
+            return tupleChambre;
+
         }
 
         catch (Exception e)

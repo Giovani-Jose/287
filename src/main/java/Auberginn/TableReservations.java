@@ -25,8 +25,8 @@ public class TableReservations
                 "select * from reservation" +
                         " where utilisateur = ? and idChambre = ?");
         stmtInsert = connex.getConnection()
-                .prepareStatement("insert into reservation (idClient, idChambre,utilisateur, prixTotal, dateDebut, dateFin) "
-                        + "values (?,?,?,?,?,?)");
+                .prepareStatement("insert into reservation (utilisateur, idChambre, prixTotal, dateDebut, dateFin) "
+                        + "values (?,?,?,?,?)");
         stmtChambreExists = connex.getConnection()
                 .prepareStatement("select * from reservation" +
                         " where idChambre = ? " + "order by dateDebut");
@@ -84,15 +84,14 @@ public class TableReservations
     /**
      * Ajout d'une nouvelle reservation dans la base de données.
      */
-    public void reserver(int idClient, int idChambre,String utilisateur, float prixTotal, Date dateDebut, Date dateFin) throws SQLException
+    public void reserver(String utilisateur,int idChambre, float prixTotal, Date dateDebut, Date dateFin) throws SQLException
     {
         /* Ajout de la reservation */
-        stmtInsert.setInt(1, idClient);
+        stmtInsert.setString(1, utilisateur);
         stmtInsert.setInt(2, idChambre);
-        stmtInsert.setString(3,utilisateur);
-        stmtInsert.setFloat(4,prixTotal);
-        stmtInsert.setDate(5, dateDebut);
-        stmtInsert.setDate(6, dateFin);
+        stmtInsert.setFloat(3,prixTotal);
+        stmtInsert.setDate(4, dateDebut);
+        stmtInsert.setDate(5, dateFin);
         stmtInsert.executeUpdate();
     }
 
