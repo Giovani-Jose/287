@@ -158,6 +158,7 @@ public class GestionInterrogation
     {
         List<TupleReservation> reservations = new LinkedList<TupleReservation>();
 
+        stmtListeReservationUnClient.setString(1,utilisateur);
         ResultSet rset = stmtListeReservationUnClient.executeQuery();
         while (rset.next())
         {
