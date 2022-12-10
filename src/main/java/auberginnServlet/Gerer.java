@@ -98,8 +98,8 @@ public class Gerer extends HttpServlet {
                 }
                 else if(request.getParameter("InclureCommodite")!=null && request.getParameter("SelectionCommodite")!=null)
                 {
-                    actionSuppChambre(request);
-                    dispatcher = request.getRequestDispatcher("/WEB-INF/GererChambre.jsp");
+                    request.setAttribute("commoditeId", request.getParameter("SelectionCommodite"));
+                    dispatcher = request.getRequestDispatcher("/WEB-INF/inclureCommodite.jsp");
                     dispatcher.forward(request, response);
                 }
                 else if(request.getParameter("EnleverCommodite")!=null)

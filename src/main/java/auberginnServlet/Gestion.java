@@ -33,6 +33,7 @@ public class Gestion extends HttpServlet
     private String randomVal;
     private static final String ajoutChambre = "AjoutChambre";
     private static final String ajoutCommodite = "AjoutCommodite";
+    private static final String ajoutService = "AjoutService";
     private static final String ajoutReservation = "AjoutReservation";
     private static final String SupprimerChambre = "SupprimerChambre";
     private static final String appelVersGestionChambre = "/GestionChambre";
@@ -44,6 +45,7 @@ public class Gestion extends HttpServlet
     @Override
     public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
     {
+
         loadTransaction();
 
         String url = request.getRequestURL().toString();
@@ -52,6 +54,11 @@ public class Gestion extends HttpServlet
 
         String recupererAppel = verifierAuteurDeLappel(lastPath);
 
+        System.out.println("Servlet Gestion : POST");
+        System.out.println(recupererAppel);
+        System.out.println(lastPath);
+        System.out.println(request.getParameter("custId"));
+        System.out.println(randomVal);
 
         //permet d'eviter de soumettre a nouveau l'action lorsque la page est reloadé
         if(Objects.equals(randomVal, request.getParameter("custId")))
@@ -63,8 +70,8 @@ public class Gestion extends HttpServlet
                return;
            }
         }
-
-
+        System.out.println("Servlet Gestion : POST");
+        System.out.println(lastPath);
         switch(recupererAppel)
         {
             case appelVersGestionChambre:
@@ -81,23 +88,27 @@ public class Gestion extends HttpServlet
             case appelVersGestionReservation:
                 transaction = determinerTransaction(request,response);
 
-                try {
-                    verifierChampReservation(request,response);
 
-                } catch (AuberginnException e) {
-                    e.printStackTrace();
-                }
+                    try {
+                        verifierChampReservation(request, response);
+
+                    } catch (AuberginnException e) {
+                        e.printStackTrace();
+                    }
+
                 executerTransactionReservation(transaction,request,response);
 
                 break;
 
             case appelVersGestionCommodite:
+                System.out.println("Servlet Gestion : appel gestion commodite");
                 transaction = determinerTransaction(request,response);
-
-                try {
-                    verifierChampCommodite(request,response);
-                } catch (AuberginnException e) {
-                    e.printStackTrace();
+                if (transaction == ajoutCommodite) {
+                    try {
+                        verifierChampCommodite(request, response);
+                    } catch (AuberginnException e) {
+                        e.printStackTrace();
+                    }
                 }
                 executerTransactionCommodite(transaction,request,response);
                 break;
@@ -111,6 +122,7 @@ public class Gestion extends HttpServlet
         transactions = new ArrayList<>();
         transactions.add(ajoutChambre);
         transactions.add(ajoutCommodite);
+        transactions.add(ajoutService);
         transactions.add(SupprimerChambre);
         transactions.add(ajoutReservation);
 
@@ -177,6 +189,7 @@ public class Gestion extends HttpServlet
 
     public void executerTransactionCommodite(String transaction,HttpServletRequest request,HttpServletResponse response) throws ServletException, IOException {
 
+        System.out.println("Servlet Gestion : transaction commodite");
         HttpSession session = request.getSession();
         GestionAubergeInn aubergeUpdate = AuberginnHelper.getBiblioUpdate(session);
 
@@ -188,6 +201,22 @@ public class Gestion extends HttpServlet
                     try {
                         aubergeUpdate.getGestionCommodite().ajouterCommodite(Integer.parseInt(request.getParameter("commoditeId")),
                                 request.getParameter("description"), Float.parseFloat(request.getParameter("prixSurplus")),request,response);
+                        randomVal = request.getParameter("custId");
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+                redirectionVersAuteurAppel(request,response,appelVersGestionCommodite);
+
+                break;
+
+            case ajoutService:
+                synchronized (aubergeUpdate)
+                {
+                    try {
+                        System.out.println("Servlet gestion : ajout service");
+                        aubergeUpdate.getGestionService().inclureCommodite(Integer.parseInt(request.getParameter("SelectChambre")),
+                                Integer.parseInt(request.getParameter("commoditeId")),request,response);
                         randomVal = request.getParameter("custId");
                     } catch (Exception e) {
                         e.printStackTrace();
