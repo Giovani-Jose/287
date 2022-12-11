@@ -111,7 +111,7 @@ public class GestionChambre {
         }
     }
 
-    public TupleChambre afficherChambre(int idChambre) throws Exception
+    public TupleChambre getChambre(int idChambre, HttpServletRequest request, HttpServletResponse response) throws Exception
     {
         try
         {
@@ -128,6 +128,13 @@ public class GestionChambre {
 
         catch (Exception e)
         {
+            List<String> listeMessageErreur = new LinkedList<String>();
+            listeMessageErreur.add(e.getMessage());
+            request.setAttribute("listeMessageErreur", listeMessageErreur);
+            RequestDispatcher dispatcher = request.getRequestDispatcher("/WEB-INF/GererChambre.jsp");
+            dispatcher.forward(request, response);
+            // pour déboggage seulement : afficher tout le contenu de l'exception
+            e.printStackTrace();;
             connex.rollback();
             throw e;
         }

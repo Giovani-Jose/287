@@ -36,14 +36,8 @@
 <body>
 <div class="contain">
 
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <jsp:include page="/WEB-INF/navigation.jsp" />
 
-        <div class="navbar-collapse collapse justify-content-end">
-            <ul class="nav navbar-nav navbar-right">
-                <li><a class="nav-item nav-link" href="Logout">Déconnexion</a></li>
-            </ul>
-        </div>
-    </nav>
     <h1 class="text-center">Auberginn</h1>
     <h3 class="text-center">Informations sur un client selectionné</h3>
     <form action="Inscription" method="POST">
