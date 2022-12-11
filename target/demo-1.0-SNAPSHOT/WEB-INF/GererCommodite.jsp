@@ -97,13 +97,13 @@
 
       <div class="row">
         <div class="col-md-2">
-          <input class="btn btn-outline-primary" type="SUBMIT" name="AjoutCommodite" value="Ajouter une commodite">
+          <input class="btn btn-outline-primary" type="SUBMIT" name="AjoutCommodite" value="Nouvelle commodite">
         </div>
         <div class="col-md-2">
-          <input class="btn btn-dark" type="SUBMIT" name="InclureCommodite" value="Inclure commodite">
+          <input class="btn btn-outline-success" type="SUBMIT" name="InclureCommodite" value="Inclure à une chambre">
         </div>
         <div class="col-md-2">
-          <input class="btn btn-outline-danger" type="SUBMIT" name="EnleverCommodite" value="Enlever commodite">
+          <input class="btn btn-outline-danger" type="SUBMIT" name="EnleverCommodite" value="Enlever d'une chambre">
         </div>
       </div>
       <%
@@ -119,7 +119,10 @@
 
 </div>
 
-
+<br>
+<%-- inclusion d'une autre page pour l'affichage des messages d'erreur--%>
+<jsp:include page="/WEB-INF/messageErreur.jsp" />
+<br>
 
 <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
         integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"

@@ -42,6 +42,7 @@ public class GestionInterrogation
     private PreparedStatement stmtListeTousReservation;
     private PreparedStatement stmtListeReservationUnClient;
     private PreparedStatement stmtListeTousCommodite;
+    private PreparedStatement stmtListeTousChambreAvecCommodite;
     private Connexion cx;
 
     /**
@@ -62,6 +63,8 @@ public class GestionInterrogation
 
         stmtListeTousCommodite = cx.getConnection().prepareStatement(
                 "SELECT * FROM commodite");
+        stmtListeTousChambreAvecCommodite = cx.getConnection().prepareStatement(
+            "SELECT c.* FROM chambre c WHERE c.idChambre in (SELECT s.idChambre FROM service s WHERE s.idCommodite = ?)");
     }
     
     /**
@@ -128,6 +131,23 @@ public class GestionInterrogation
         rset.close();
         cx.commit();
         return cs;
+    }
+
+    public List<TupleChambre> listerChambreAvecCommodite(int idCommodite) throws SQLException
+    {
+        List<TupleChambre> chambres = new LinkedList<TupleChambre>();
+
+        stmtListeTousChambreAvecCommodite.setInt(1, idCommodite);
+        ResultSet rset = stmtListeTousChambreAvecCommodite.executeQuery();
+        while (rset.next())
+        {
+            TupleChambre chambre= new TupleChambre(rset.getInt("idChambre"), rset.getString("nomChambre"),
+                    rset.getString("typeLit"),rset.getFloat("prixBase"));
+            chambres.add(chambre);
+        }
+        rset.close();
+        cx.commit();
+        return chambres;
     }
 
 }

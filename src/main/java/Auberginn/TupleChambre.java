@@ -97,6 +97,15 @@ public class TupleChambre
             com.printInfo();
         }
     }
+
+    public boolean possedeCommodite(int idCommodite)
+    {
+        for (TupleCommodite com : commodites) {
+            if (com.getIdCommodite() == idCommodite)
+                return true;
+        }
+        return false;
+    }
     //endregion
 
 }

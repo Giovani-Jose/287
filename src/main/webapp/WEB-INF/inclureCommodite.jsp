@@ -4,7 +4,8 @@
 <%@ page import="java.sql.SQLException" %>
 <%@ page import="Auberginn.AuberginnException" %>
 <%@ page import="java.util.Random" %>
-<%@ page import="Auberginn.TupleChambre" %><%--
+<%@ page import="Auberginn.TupleChambre" %>
+<%@ page import="java.util.LinkedList" %><%--
   Created by IntelliJ IDEA.
   User: gtchi
   Date: 2022-12-07
@@ -44,7 +45,7 @@
         </div>
     </nav>
     <h1 class="text-center">Auberginn</h1>
-    <h3 class="text-center">Choix de la chambre pour la commodité : <%=request.getAttribute("commoditeId")%></h3>
+    <h3 class="text-center">Choisir une chambre</h3>
     <form action="GestionCommodite" method="POST">
         <div class="col-8 offset-2">
 
@@ -61,11 +62,35 @@
                 <tbody>
                 <%
                     List<TupleChambre> chambres = null;
-                    try {
-                        chambres = AuberginnHelper.getBiblioInterro(session).getGestionInterrogation()
-                                .listerTouteChambres();
-                    } catch (SQLException e) {
-                        e.printStackTrace();
+                    if (request.getAttribute("typeAction") == "inclure"){
+                        try {
+                            chambres = AuberginnHelper.getBiblioInterro(session).getGestionInterrogation()
+                                    .listerTouteChambres();
+                        } catch (SQLException e) {
+                            e.printStackTrace();
+                        }
+                        if (chambres.size() < 1) {
+                            List<String> listeMessageErreur = new LinkedList<String>();
+                            listeMessageErreur.add("Aucune chambre existante");
+                            request.setAttribute("listeMessageErreur", listeMessageErreur);
+                            RequestDispatcher dispatcher = request.getRequestDispatcher("/WEB-INF/GererCommodite.jsp");
+                            dispatcher.forward(request, response);
+                        }
+                    }
+                    else if (request.getAttribute("typeAction") == "enlever"){
+                        try {
+                            chambres = AuberginnHelper.getBiblioInterro(session).getGestionInterrogation()
+                                    .listerChambreAvecCommodite(Integer.parseInt((String)request.getAttribute("commoditeId")));
+                        } catch (SQLException e) {
+                            e.printStackTrace();
+                        }
+                        if (chambres.size() < 1) {
+                            List<String> listeMessageErreur = new LinkedList<String>();
+                            listeMessageErreur.add("Aucune chambre ne possède cette commodité");
+                            request.setAttribute("listeMessageErreur", listeMessageErreur);
+                            RequestDispatcher dispatcher = request.getRequestDispatcher("/WEB-INF/GererCommodite.jsp");
+                            dispatcher.forward(request, response);
+                        }
                     }
                     for (TupleChambre chambre : chambres)
                     {
@@ -88,9 +113,7 @@
                     <td></td>
                     <td colspan="2">
                         <%
-
-                                // end else livre en retard
-                            } // end for all members
+                            } // end for
                         %>
                     </td>
                 </tr>
@@ -101,10 +124,16 @@
         <div class="col-xs-4 text-center offset-3">
             <div class="row">
 
+                <% if (request.getAttribute("typeAction") == "inclure"){ %>
 
                 -<input class="btn btn-primary" type="SUBMIT" name="AjoutService" value="Inclure commodite">
 
+                <% } %>
+                <% if (request.getAttribute("typeAction") == "enlever"){ %>
 
+                -<input class="btn btn-danger" type="SUBMIT" name="EnleverService" value="Retirer commodite">
+
+                <% } %>
 
             <%
                 Random rand = new Random();

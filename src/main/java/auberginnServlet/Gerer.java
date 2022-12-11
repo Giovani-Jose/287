@@ -9,6 +9,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Objects;
 
 
@@ -96,16 +98,37 @@ public class Gerer extends HttpServlet {
                     dispatcher = request.getRequestDispatcher("/WEB-INF/ajoutCommodite.jsp");
                     dispatcher.forward(request, response);
                 }
-                else if(request.getParameter("InclureCommodite")!=null && request.getParameter("SelectionCommodite")!=null)
+                else if(request.getParameter("InclureCommodite")!=null)
                 {
-                    request.setAttribute("commoditeId", request.getParameter("SelectionCommodite"));
-                    dispatcher = request.getRequestDispatcher("/WEB-INF/inclureCommodite.jsp");
-                    dispatcher.forward(request, response);
+                    if (request.getParameter("SelectionCommodite") == null) {
+                        List<String> listeMessageErreur = new LinkedList<String>();
+                        listeMessageErreur.add("Veuillez choisir une commodité");
+                        request.setAttribute("listeMessageErreur", listeMessageErreur);
+                        dispatcher = request.getRequestDispatcher("/WEB-INF/GererCommodite.jsp");
+                        dispatcher.forward(request, response);
+                    }
+                    else {
+                        request.setAttribute("commoditeId", request.getParameter("SelectionCommodite"));
+                        request.setAttribute("typeAction", "inclure");
+                        dispatcher = request.getRequestDispatcher("/WEB-INF/inclureCommodite.jsp");
+                        dispatcher.forward(request, response);
+                    }
                 }
                 else if(request.getParameter("EnleverCommodite")!=null)
                 {
-                    dispatcher = request.getRequestDispatcher("/WEB-INF/AfficherChambresLibres.jsp");
-                    dispatcher.forward(request, response);
+                    if (request.getParameter("SelectionCommodite") == null) {
+                        List<String> listeMessageErreur = new LinkedList<String>();
+                        listeMessageErreur.add("Veuillez choisir une commodité");
+                        request.setAttribute("listeMessageErreur", listeMessageErreur);
+                        dispatcher = request.getRequestDispatcher("/WEB-INF/GererCommodite.jsp");
+                        dispatcher.forward(request, response);
+                    }
+                    else {
+                        request.setAttribute("commoditeId", request.getParameter("SelectionCommodite"));
+                        request.setAttribute("typeAction", "enlever");
+                        dispatcher = request.getRequestDispatcher("/WEB-INF/inclureCommodite.jsp");
+                        dispatcher.forward(request, response);
+                    }
                 }
 
                 break;

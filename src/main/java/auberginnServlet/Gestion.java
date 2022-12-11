@@ -34,6 +34,7 @@ public class Gestion extends HttpServlet
     private static final String ajoutChambre = "AjoutChambre";
     private static final String ajoutCommodite = "AjoutCommodite";
     private static final String ajoutService = "AjoutService";
+    private static final String enleverService = "EnleverService";
     private static final String ajoutReservation = "AjoutReservation";
     private static final String SupprimerChambre = "SupprimerChambre";
     private static final String appelVersGestionChambre = "/GestionChambre";
@@ -123,6 +124,7 @@ public class Gestion extends HttpServlet
         transactions.add(ajoutChambre);
         transactions.add(ajoutCommodite);
         transactions.add(ajoutService);
+        transactions.add(enleverService);
         transactions.add(SupprimerChambre);
         transactions.add(ajoutReservation);
 
@@ -214,10 +216,48 @@ public class Gestion extends HttpServlet
                 synchronized (aubergeUpdate)
                 {
                     try {
-                        System.out.println("Servlet gestion : ajout service");
-                        aubergeUpdate.getGestionService().inclureCommodite(Integer.parseInt(request.getParameter("SelectChambre")),
-                                Integer.parseInt(request.getParameter("commoditeId")),request,response);
-                        randomVal = request.getParameter("custId");
+                        if (request.getParameter("SelectChambre") == null) {
+                            List<String> listeMessageErreur = new LinkedList<String>();
+                            listeMessageErreur.add("Veuillez choisir une chambre");
+                            request.setAttribute("commoditeId", request.getParameter("commoditeId"));
+                            request.setAttribute("typeAction", "inclure");
+                            request.setAttribute("listeMessageErreur", listeMessageErreur);
+                            RequestDispatcher dispatcher = request.getRequestDispatcher("/WEB-INF/inclureCommodite.jsp");
+                            dispatcher.forward(request, response);
+                        }
+                        else {
+                            System.out.println("Servlet gestion : ajout service");
+                            aubergeUpdate.getGestionService().inclureCommodite(Integer.parseInt(request.getParameter("SelectChambre")),
+                                    Integer.parseInt(request.getParameter("commoditeId")), request, response);
+                            randomVal = request.getParameter("custId");
+                        }
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+                redirectionVersAuteurAppel(request,response,appelVersGestionCommodite);
+
+                break;
+
+            case enleverService:
+                synchronized (aubergeUpdate)
+                {
+                    try {
+                        if (request.getParameter("SelectChambre") == null) {
+                            List<String> listeMessageErreur = new LinkedList<String>();
+                            listeMessageErreur.add("Veuillez choisir une chambre");
+                            request.setAttribute("commoditeId", request.getParameter("commoditeId"));
+                            request.setAttribute("typeAction", "enlever");
+                            request.setAttribute("listeMessageErreur", listeMessageErreur);
+                            RequestDispatcher dispatcher = request.getRequestDispatcher("/WEB-INF/inclureCommodite.jsp");
+                            dispatcher.forward(request, response);
+                        }
+                        else {
+                            System.out.println("Servlet gestion : enlever service");
+                            aubergeUpdate.getGestionService().enleverCommodite(Integer.parseInt(request.getParameter("SelectChambre")),
+                                    Integer.parseInt(request.getParameter("commoditeId")), request, response);
+                            randomVal = request.getParameter("custId");
+                        }
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
