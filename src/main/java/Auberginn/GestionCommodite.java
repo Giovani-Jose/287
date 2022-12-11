@@ -1,6 +1,12 @@
 package Auberginn;
 
 
+import javax.servlet.RequestDispatcher;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.util.LinkedList;
+import java.util.List;
+
 public class GestionCommodite {
     private final TableCommodites commodites;
     private final TableServices services;
@@ -15,7 +21,7 @@ public class GestionCommodite {
         this.services = services;
     }
 
-    public void ajouterCommodite(int idCommodite, String description, float surplusPrix)
+    public void ajouterCommodite(int idCommodite, String description, float surplusPrix, HttpServletRequest request, HttpServletResponse response)
             throws Exception
     {
         try
@@ -32,6 +38,13 @@ public class GestionCommodite {
         }
         catch (Exception e)
         {
+            List<String> listeMessageErreur = new LinkedList<String>();
+            listeMessageErreur.add(e.getMessage());
+            request.setAttribute("listeMessageErreur", listeMessageErreur);
+            RequestDispatcher dispatcher = request.getRequestDispatcher("/WEB-INF/ajoutCommodite.jsp");
+            dispatcher.forward(request, response);
+            // pour déboggage seulement : afficher tout le contenu de l'exception
+            e.printStackTrace();;
             cx.rollback();
             throw e;
         }
