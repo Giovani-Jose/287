@@ -43,6 +43,7 @@ public class GestionInterrogation
     private PreparedStatement stmtListeReservationUnClient;
     private PreparedStatement stmtListeTousCommodite;
     private PreparedStatement stmtListeTousChambreAvecCommodite;
+    private PreparedStatement stmtListeTousCommoditeAvecChambre;
     private Connexion cx;
 
     /**
@@ -63,8 +64,12 @@ public class GestionInterrogation
 
         stmtListeTousCommodite = cx.getConnection().prepareStatement(
                 "SELECT * FROM commodite");
+
         stmtListeTousChambreAvecCommodite = cx.getConnection().prepareStatement(
             "SELECT c.* FROM chambre c WHERE c.idChambre in (SELECT s.idChambre FROM service s WHERE s.idCommodite = ?)");
+
+        stmtListeTousCommoditeAvecChambre = cx.getConnection().prepareStatement(
+            "SELECT c.* FROM commodite c WHERE c.idCommodite in (SELECT s.idCommodite FROM service s WHERE s.idChambre = ?)");
     }
     
     /**
@@ -148,6 +153,23 @@ public class GestionInterrogation
         rset.close();
         cx.commit();
         return chambres;
+    }
+
+    public List<TupleCommodite> listerCommoditeAvecChambre(int idChambre) throws SQLException
+    {
+        List<TupleCommodite> cs = new LinkedList<TupleCommodite>();
+
+        stmtListeTousCommoditeAvecChambre.setInt(1, idChambre);
+        ResultSet rset = stmtListeTousCommoditeAvecChambre.executeQuery();
+        while (rset.next())
+        {
+            TupleCommodite c = new TupleCommodite(rset.getInt("idCommodite"), rset.getString("description"),
+                    rset.getFloat("surplusPrix"));
+            cs.add(c);
+        }
+        rset.close();
+        cx.commit();
+        return cs;
     }
 
 }

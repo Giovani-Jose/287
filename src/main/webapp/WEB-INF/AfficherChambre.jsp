@@ -4,7 +4,8 @@
 <%@ page import="java.sql.SQLException" %>
 <%@ page import="Auberginn.AuberginnException" %>
 <%@ page import="java.util.Random" %>
-<%@ page import="Auberginn.TupleChambre" %><%--
+<%@ page import="Auberginn.TupleChambre" %>
+<%@ page import="Auberginn.TupleCommodite" %><%--
   Created by IntelliJ IDEA.
   User: gtchi
   Date: 2022-12-07
@@ -35,16 +36,10 @@
 <body>
 <div class="contain">
 
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <jsp:include page="/WEB-INF/navigation.jsp" />
 
-        <div class="navbar-collapse collapse justify-content-end">
-            <ul class="nav navbar-nav navbar-right">
-                <li><a class="nav-item nav-link" href="Logout">Déconnexion</a></li>
-            </ul>
-        </div>
-    </nav>
     <h1 class="text-center">Auberginn</h1>
-    <h3 class="text-center">Affichage d'une chambre</h3>
+    <h3 class="text-center">Chambre #<%=request.getAttribute("idChambre")%></h3>
 
     <div class="col-8 offset-2">
 
@@ -52,49 +47,49 @@
             <thead class="thead-dark">
             <tr>
                 <th scope="col"></th>
-                <th scope="col">no de chambre</th>
-                <th scope="col">nom de chambre</th>
-                <th scope="col">type de lit</th>
-                <th scope="col">prix total</th>
-                <th scope="col">Commodite numero</th>
-                <th scope="col">Description</th>
-                <th scope="col">Prix en surplus</th>
+                <th scope="col">Numéro de chambre</th>
+                <th scope="col">Nom</th>
+                <th scope="col">Type de lit</th>
+                <th scope="col">Prix total</th>
+                <th scope="col">Commodités</th>
             </tr>
             </thead>
             <tbody>
             <%
-                List<TupleChambre> chambres = null;
+                TupleChambre chambre = null;
                 try {
-                    //chambres = AuberginnHelper.getBiblioInterro(session).getGestionChambre().afficherChambre(Integer.parseInt((String) session.getAttribute("idChambre")));
+                    chambre = AuberginnHelper.getBiblioInterro(session).getGestionChambre().
+                            getChambre(Integer.parseInt((String) request.getAttribute("idChambre")),
+                            request, response);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
-                for (TupleChambre chambre : chambres)
-                {
+
+                List<TupleCommodite> commodites = null;
+                try {
+                    commodites = AuberginnHelper.getBiblioInterro(session).getGestionInterrogation().
+                            listerCommoditeAvecChambre(Integer.parseInt((String)request.getAttribute("idChambre")));
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                String listeCom = "";
+                for (TupleCommodite c :
+                        commodites) {
+                    listeCom += "-" + c.getDescription() + "<br>";
+                }
             %>
 
             <tr>
 
                 <td>
-                <input type="checkbox" name="SelectionChambre" value = "<%=chambre.getIdChambre()%>">
-
-
-            </td>
+                </td>
                 <td><%=chambre.getIdChambre()%></td>
                 <td><%=chambre.getNomChambre()%></td>
                 <td><%=chambre.getTypeLit()%></td>
                 <td><%=chambre.getPrixTotal()%></td>
-
+                <td><%=listeCom%></td>
 
             <tr>
-                <td></td>
-                <td colspan="2">
-                    <%
-
-                            // end else livre en retard
-                        } // end for all members
-                    %>
-                </td>
             </tr>
             </tbody>
         </table>

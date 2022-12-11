@@ -69,7 +69,7 @@
             <tr>
 
                 <td>
-                <input type="checkbox" name="SelectionChambre" value = "<%=chambre.getIdChambre()%>">
+                <input type="radio" name="SelectionChambre" value = "<%=chambre.getIdChambre()%>">
 
 
             </td>
@@ -101,7 +101,7 @@
                 <input class="btn btn-outline-primary" type="SUBMIT" name="AjoutChambre" value="Ajouter une chambre">
             </div>
             <div class="col-md-2">
-                <input class="btn btn-dark" type="SUBMIT" name="AfficherChambre" value="Afficher une chambre">
+                <input class="btn btn-dark" type="SUBMIT" name="AfficherChambre" value="Afficher la chambre">
             </div>
             <div class="col-md-2">
                 <input class="btn btn-outline-danger" type="SUBMIT" name="SupprimerChambre" value="Supprimer Chambre">
@@ -123,6 +123,10 @@
 
 </div>
 
+<br>
+<%-- inclusion d'une autre page pour l'affichage des messages d'erreur--%>
+<jsp:include page="/WEB-INF/messageErreur.jsp" />
+<br>
 
 
 <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"

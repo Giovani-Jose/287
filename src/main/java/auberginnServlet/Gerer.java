@@ -77,16 +77,41 @@ public class Gerer extends HttpServlet {
                 {
                     dispatcher = request.getRequestDispatcher("/WEB-INF/creerChambre.jsp");
                     dispatcher.forward(request, response);
-                }else if(request.getParameter("SupprimerChambre")!=null && request.getParameter("SelectionChambre")!=null)
+                }
+                else if(request.getParameter("SupprimerChambre")!=null)
                 {
-                    actionSuppChambre(request);
-                    dispatcher = request.getRequestDispatcher("/WEB-INF/GererChambre.jsp");
-                    dispatcher.forward(request, response);
+                    if (request.getParameter("SelectionChambre") == null) {
+                        List<String> listeMessageErreur = new LinkedList<String>();
+                        listeMessageErreur.add("Veuillez choisir une chambre");
+                        request.setAttribute("listeMessageErreur", listeMessageErreur);
+                        dispatcher = request.getRequestDispatcher("/WEB-INF/GererChambre.jsp");
+                        dispatcher.forward(request, response);
+                    }
+                    else {
+                        actionSuppChambre(request);
+                        dispatcher = request.getRequestDispatcher("/WEB-INF/GererChambre.jsp");
+                        dispatcher.forward(request, response);
+                    }
                 }
                 else if(request.getParameter("AfficherChambreLibres")!=null)
                 {
                     dispatcher = request.getRequestDispatcher("/WEB-INF/AfficherChambresLibres.jsp");
                     dispatcher.forward(request, response);
+                }
+                else if(request.getParameter("AfficherChambre")!=null)
+                {
+                    if (request.getParameter("SelectionChambre") == null) {
+                        List<String> listeMessageErreur = new LinkedList<String>();
+                        listeMessageErreur.add("Veuillez choisir une chambre");
+                        request.setAttribute("listeMessageErreur", listeMessageErreur);
+                        dispatcher = request.getRequestDispatcher("/WEB-INF/GererChambre.jsp");
+                        dispatcher.forward(request, response);
+                    }
+                    else {
+                        request.setAttribute("idChambre", request.getParameter("SelectionChambre"));
+                        dispatcher = request.getRequestDispatcher("/WEB-INF/AfficherChambre.jsp");
+                        dispatcher.forward(request, response);
+                    }
                 }
 
                 break;
