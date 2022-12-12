@@ -2,6 +2,7 @@ package auberginnServlet;
 
 import Auberginn.Connexion;
 import Auberginn.TupleChambre;
+import Auberginn.TupleCommodite;
 import Auberginn.TupleReservation;
 
 import java.sql.PreparedStatement;
@@ -37,12 +38,12 @@ import java.util.List;
 
 public class GestionInterrogation
 {
-    private PreparedStatement stmtLivresRetard;
-    private PreparedStatement stmtLivresTitreMot;
-    private PreparedStatement stmtListeTousLivres;
     private PreparedStatement stmtListeTousChambre;
     private PreparedStatement stmtListeTousReservation;
     private PreparedStatement stmtListeReservationUnClient;
+    private PreparedStatement stmtListeTousCommodite;
+    private PreparedStatement stmtListeTousChambreAvecCommodite;
+    private PreparedStatement stmtListeTousCommoditeAvecChambre;
     private Connexion cx;
 
     /**
@@ -51,17 +52,6 @@ public class GestionInterrogation
     public GestionInterrogation(Connexion cx) throws SQLException
     {
         this.cx = cx;
-        stmtLivresRetard = cx.getConnection().prepareStatement("SELECT idlivre, titre, auteur, datePret, "
-                + "utilisateur, to_date(?,'YYYY-MM-DD') - datePret - 14 as retard FROM livre "
-                + "WHERE utilisateur = ? AND to_date(?,'YYYY-MM-DD') - datePret > 14 "
-                + "ORDER BY retard");
-
-        stmtLivresTitreMot = cx.getConnection()
-                .prepareStatement("select t1.idLivre, t1.titre, t1.auteur, t1.utilisateur, t1.datePret + 14 "
-                        + "from livre t1 " + "where lower(titre) like ?");
-
-        stmtListeTousLivres = cx.getConnection().prepareStatement(
-                "select t1.idLivre, t1.titre, t1.auteur, t1.utilisateur, t1.datePret " + "from livre t1");
         
         stmtListeTousReservation = cx.getConnection().prepareStatement(
                 "SELECT * FROM reservation");
@@ -71,70 +61,16 @@ public class GestionInterrogation
 
         stmtListeTousChambre = cx.getConnection().prepareStatement(
                 "SELECT * FROM chambre");
+
+        stmtListeTousCommodite = cx.getConnection().prepareStatement(
+                "SELECT * FROM commodite");
+
+        stmtListeTousChambreAvecCommodite = cx.getConnection().prepareStatement(
+            "SELECT c.* FROM chambre c WHERE c.idChambre in (SELECT s.idChambre FROM service s WHERE s.idCommodite = ?)");
+
+        stmtListeTousCommoditeAvecChambre = cx.getConnection().prepareStatement(
+            "SELECT c.* FROM commodite c WHERE c.idCommodite in (SELECT s.idCommodite FROM service s WHERE s.idChambre = ?)");
     }
-
-    /**
-     * Affiche les livres pr�t�s depuis plus de 14 jours.
-     */
-    /*public List<TupleLivre> listerLivresRetard(String userID, String date) throws SQLException
-    {
-        List<TupleLivre> livres = new LinkedList<TupleLivre>();
-        
-        stmtLivresRetard.setString(1, date);
-        stmtLivresRetard.setString(2, userID);
-        stmtLivresRetard.setString(3, date);
-        ResultSet rset = stmtLivresRetard.executeQuery();
-
-        while (rset.next())
-        {
-            TupleLivre livre = new TupleLivre(rset.getInt("idLivre"), rset.getString("titre"), rset.getString("auteur"), rset.getDate("dateAcquisition"),  rset.getString("utilisateur"),  rset.getDate("datePret"));
-            livres.add(livre);
-        }
-        rset.close();
-        cx.commit();
-        return livres;
-    }*/
-
-    /**
-     * Affiche les livres contenu un mot dans le titre
-     */
-    public void listerLivresTitre(String mot) throws SQLException
-    {
-        stmtLivresTitreMot.setString(1, "%" + mot + "%");
-        ResultSet rset = stmtLivresTitreMot.executeQuery();
-
-        int idMembre;
-        System.out.println("idLivre titre auteur idMembre dateRetour");
-        while (rset.next())
-        {
-            System.out.print(rset.getInt(1) + " " + rset.getString(2) + " " + rset.getString(3));
-            idMembre = rset.getInt(4);
-            if (!rset.wasNull())
-            {
-                System.out.print(" " + idMembre + " " + rset.getDate(5));
-            }
-            System.out.println();
-        }
-        cx.commit();
-    }
-
-    /**
-     * Affiche tous les livres de la BD
-     */
-  /*  public List<TupleLivre> listerLivres() throws SQLException
-    {
-        List<TupleLivre> livres = new LinkedList<TupleLivre>();
-        
-        ResultSet rset = stmtListeTousLivres.executeQuery();
-        while (rset.next())
-        {
-            TupleLivre livre = new TupleLivre(rset.getInt("idLivre"), rset.getString("titre"), rset.getString("auteur"), rset.getDate("dateAcquisition"),  rset.getString("utilisateur"),  rset.getDate("datePret"));
-            livres.add(livre);
-        }
-        rset.close();
-        cx.commit();
-        return livres;
-    }*/
     
     /**
      * Affiche tous les livres de la BD pour un membre
@@ -158,6 +94,7 @@ public class GestionInterrogation
     {
         List<TupleReservation> reservations = new LinkedList<TupleReservation>();
 
+        stmtListeReservationUnClient.setString(1,utilisateur);
         ResultSet rset = stmtListeReservationUnClient.executeQuery();
         while (rset.next())
         {
@@ -183,6 +120,56 @@ public class GestionInterrogation
         rset.close();
         cx.commit();
         return chambres;
+    }
+
+    public List<TupleCommodite> listerToutesCommodites() throws SQLException
+    {
+        List<TupleCommodite> cs = new LinkedList<TupleCommodite>();
+
+        ResultSet rset = stmtListeTousCommodite.executeQuery();
+        while (rset.next())
+        {
+            TupleCommodite c = new TupleCommodite(rset.getInt("idCommodite"), rset.getString("description"),
+                    rset.getFloat("surplusPrix"));
+            cs.add(c);
+        }
+        rset.close();
+        cx.commit();
+        return cs;
+    }
+
+    public List<TupleChambre> listerChambreAvecCommodite(int idCommodite) throws SQLException
+    {
+        List<TupleChambre> chambres = new LinkedList<TupleChambre>();
+
+        stmtListeTousChambreAvecCommodite.setInt(1, idCommodite);
+        ResultSet rset = stmtListeTousChambreAvecCommodite.executeQuery();
+        while (rset.next())
+        {
+            TupleChambre chambre= new TupleChambre(rset.getInt("idChambre"), rset.getString("nomChambre"),
+                    rset.getString("typeLit"),rset.getFloat("prixBase"));
+            chambres.add(chambre);
+        }
+        rset.close();
+        cx.commit();
+        return chambres;
+    }
+
+    public List<TupleCommodite> listerCommoditeAvecChambre(int idChambre) throws SQLException
+    {
+        List<TupleCommodite> cs = new LinkedList<TupleCommodite>();
+
+        stmtListeTousCommoditeAvecChambre.setInt(1, idChambre);
+        ResultSet rset = stmtListeTousCommoditeAvecChambre.executeQuery();
+        while (rset.next())
+        {
+            TupleCommodite c = new TupleCommodite(rset.getInt("idCommodite"), rset.getString("description"),
+                    rset.getFloat("surplusPrix"));
+            cs.add(c);
+        }
+        rset.close();
+        cx.commit();
+        return cs;
     }
 
 }

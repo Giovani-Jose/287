@@ -14,12 +14,12 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
- * Servlet qui gère la connexion d'un utilisateur au système de gestion de
- * bibliothèque
+ * Servlet qui gÃ¨re la connexion d'un utilisateur au systÃ¨me de gestion de
+ * bibliothÃ¨que
  * 
  * <pre>
  * Vincent Ducharme
- * Université de Sherbrooke
+ * UniversitÃ© de Sherbrooke
  * Version 1.0 - 11 novembre 2018
  * IFT287 - Exploitation de BD relationnelles et OO
  * </pre>
@@ -43,18 +43,18 @@ public class Accueil extends HttpServlet
 
                 if (!AuberginnHelper.peutProcederLogin(getServletContext(), request, response))
                 {
-                    System.out.println("Servlet Accueil : POST ne peut pas procéder.");
+                    System.out.println("Servlet Accueil : POST ne peut pas procÃ©der.");
                     // Le dispatch sera fait par AuberginnHelper.peutProceder
                     return;
                 }
 
                  session = request.getSession();
 
-                // Si c'est la première fois qu'on essaie de se logguer, ou
+                // Si c'est la premiÃ¨re fois qu'on essaie de se logguer, ou
                 // d'inscrire quelqu'un
                 if (!AuberginnHelper.gestionnairesCrees(session))
                 {
-                    System.out.println("Servlet Accueil : POST Création des gestionnaires");
+                    System.out.println("Servlet Accueil : POST CrÃ©ation des gestionnaires");
                     AuberginnHelper.creerGestionnaire(getServletContext(), session);
                 }
             }
@@ -66,7 +66,7 @@ public class Accueil extends HttpServlet
                 System.out.println("Servlet Accueil : POST - Connecter");
                 try
                 {
-                    // lecture des paramètres du formulaire login.jsp
+                    // lecture des paramÃ¨tres du formulaire login.jsp
                     String userId = request.getParameter("userID");
                     String motDePasse = request.getParameter("motDePasse");
 
@@ -74,9 +74,9 @@ public class Accueil extends HttpServlet
                     request.setAttribute("motDePasse", motDePasse);
                                         
                     if (userId == null || userId.equals(""))
-                        throw new AuberginnException("Le nom d'utilisateur ne peut pas être nul!");
+                        throw new AuberginnException("Le nom d'utilisateur ne peut pas Ãªtre nul!");
                     if (motDePasse == null || motDePasse.equals(""))
-                        throw new AuberginnException("Le mot de passe ne peut pas être nul!");
+                        throw new AuberginnException("Le mot de passe ne peut pas Ãªtre nul!");
 
                     if (AuberginnHelper.getBiblioInterro(session).getGestionClient().informationsConnexionValide(userId,
                             motDePasse))
@@ -93,7 +93,7 @@ public class Accueil extends HttpServlet
                     }
                     else
                     {
-                        throw new AuberginnException("Les informations de connexion sont erronées.");
+                        throw new AuberginnException("Les informations de connexion sont erronÃ©es.");
                     }
                 }
                 catch (Exception e)
@@ -103,7 +103,7 @@ public class Accueil extends HttpServlet
                     request.setAttribute("listeMessageErreur", listeMessageErreur);
                     RequestDispatcher dispatcher = request.getRequestDispatcher("/WEB-INF/login.jsp");
                     dispatcher.forward(request, response);
-                    // pour déboggage seulement : afficher tout le contenu de l'exception
+                    // pour dÃ©boggage seulement : afficher tout le contenu de l'exception
                     e.printStackTrace();
                 }
             }
@@ -112,7 +112,7 @@ public class Accueil extends HttpServlet
                 System.out.println("Servlet Accueil : POST - Inscrire");
                 try
                 {
-                    // lecture des paramètres du formulaire de creerCompte.jsp
+                    // lecture des paramÃ¨tres du formulaire de creerCompte.jsp
                     String userId = request.getParameter("userID");
                     String motDePasse = request.getParameter("motDePasse");
                     String nom = request.getParameter("nom");
@@ -142,7 +142,7 @@ public class Accueil extends HttpServlet
                     String accesS = request.getParameter("acces");
                     int acces = 1;
                     if (accesS != null)
-                        acces = AuberginnHelper.ConvertirInt(accesS, "Le niveau d'accès");
+                        acces = AuberginnHelper.ConvertirInt(accesS, "Le niveau d'accÃ¨s");
 
 
                     GestionAubergeInn aubergeUpdate = AuberginnHelper.getBiblioUpdate(session);
@@ -151,7 +151,7 @@ public class Accueil extends HttpServlet
                         aubergeUpdate.getGestionClient().inscrire(userId, motDePasse, acces, nom, prenom, Integer.parseInt(age));
                     }
 
-                    // S'il y a déjà un userID dans la session, c'est parce
+                    // S'il y a dÃ©jÃ  un userID dans la session, c'est parce
                     // qu'on est admin et qu'on inscrit un nouveau membre
                     System.out.println(session.getAttribute("userID"));
                     if (session.getAttribute("userID") == null)
@@ -179,7 +179,7 @@ public class Accueil extends HttpServlet
                     request.setAttribute("listeMessageErreur", listeMessageErreur);
                     RequestDispatcher dispatcher = request.getRequestDispatcher("/WEB-INF/creerCompte.jsp");
                     dispatcher.forward(request, response);
-                    // pour déboggage seulement : afficher tout le contenu de l'exception
+                    // pour dÃ©boggage seulement : afficher tout le contenu de l'exception
                     e.printStackTrace();
                 }
             }
@@ -191,15 +191,15 @@ public class Accueil extends HttpServlet
             request.setAttribute("listeMessageErreur", listeMessageErreur);
             RequestDispatcher dispatcher = request.getRequestDispatcher("/WEB-INF/login.jsp");
             dispatcher.forward(request, response);
-            // pour déboggage seulement : afficher tout le contenu de l'exception
+            // pour dÃ©boggage seulement : afficher tout le contenu de l'exception
             e.printStackTrace();
         }
     }
 
-    // Dans les formulaires, on utilise la méthode POST
-    // donc, si le servlet est appelé avec la méthode GET
-    // c'est que l'adresse a été demandé par l'utilisateur.
-    // On procède si la connexion est actives seulement, sinon
+    // Dans les formulaires, on utilise la mÃ©thode POST
+    // donc, si le servlet est appelÃ© avec la mÃ©thode GET
+    // c'est que l'adresse a Ã©tÃ© demandÃ© par l'utilisateur.
+    // On procÃ¨de si la connexion est actives seulement, sinon
     // on retourne au login
     @Override
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException

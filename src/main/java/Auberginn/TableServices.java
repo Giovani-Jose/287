@@ -3,10 +3,13 @@ package Auberginn;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.LinkedList;
+import java.util.List;
 
 public class TableServices
 {
     private final PreparedStatement stmtExists;
+    private final PreparedStatement stmtListeChambres;
     private final PreparedStatement stmtInsert;
     private final PreparedStatement stmtDelete;
     private final Connexion cx;
@@ -21,6 +24,8 @@ public class TableServices
                         + "values (?,?)");
         stmtDelete = cx.getConnection().prepareStatement("delete from service " +
                 "where idChambre = ? and idCommodite = ?");
+        stmtListeChambres = cx.getConnection().prepareStatement(
+                "select * from service where idCommodite = ?");
     }
 
     /**
@@ -71,5 +76,20 @@ public class TableServices
         stmtDelete.setInt(1, idChambre);
         stmtDelete.setInt(2, idCommodite);
         return stmtDelete.executeUpdate();
+    }
+
+    public List<TupleServices> listeChambre(int idCommodite) throws SQLException
+    {
+        stmtListeChambres.setInt(1, idCommodite);
+        ResultSet rset = stmtListeChambres.executeQuery();
+        List<TupleServices> cs = new LinkedList<>();
+        while (rset.next())
+        {
+            TupleServices ts = new TupleServices(rset.getInt(1),
+                    rset.getInt(2));
+            cs.add(ts);
+        }
+        rset.close();
+        return cs;
     }
 }

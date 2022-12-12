@@ -8,7 +8,7 @@
 	%>
 			<li><a class="nav-item nav-link" href="GererMembre" >Gérer les clients</a></li>
 			<li><a class="nav-item nav-link" href="GererChambre">Gérer les chambres</a></li>
-			<li><a class="nav-item nav-link" href="#">Gérer les commodites</a></li>
+			<li><a class="nav-item nav-link" href="GererCommodite">Gérer les commodites</a></li>
 
 			<%
 	    }

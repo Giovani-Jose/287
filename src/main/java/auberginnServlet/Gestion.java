@@ -32,6 +32,9 @@ public class Gestion extends HttpServlet
     private static final long serialVersionUID = 1L;
     private String randomVal;
     private static final String ajoutChambre = "AjoutChambre";
+    private static final String ajoutCommodite = "AjoutCommodite";
+    private static final String ajoutService = "AjoutService";
+    private static final String enleverService = "EnleverService";
     private static final String ajoutReservation = "AjoutReservation";
     private static final String SupprimerChambre = "SupprimerChambre";
     private static final String appelVersGestionChambre = "/GestionChambre";
@@ -43,6 +46,7 @@ public class Gestion extends HttpServlet
     @Override
     public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
     {
+
         loadTransaction();
 
         String url = request.getRequestURL().toString();
@@ -51,6 +55,11 @@ public class Gestion extends HttpServlet
 
         String recupererAppel = verifierAuteurDeLappel(lastPath);
 
+        System.out.println("Servlet Gestion : POST");
+        System.out.println(recupererAppel);
+        System.out.println(lastPath);
+        System.out.println(request.getParameter("custId"));
+        System.out.println(randomVal);
 
         //permet d'eviter de soumettre a nouveau l'action lorsque la page est reloadé
         if(Objects.equals(randomVal, request.getParameter("custId")))
@@ -62,8 +71,8 @@ public class Gestion extends HttpServlet
                return;
            }
         }
-
-
+        System.out.println("Servlet Gestion : POST");
+        System.out.println(lastPath);
         switch(recupererAppel)
         {
             case appelVersGestionChambre:
@@ -80,21 +89,31 @@ public class Gestion extends HttpServlet
             case appelVersGestionReservation:
                 transaction = determinerTransaction(request,response);
 
-                try {
-                    verifierChampReservation(request,response);
 
-                } catch (AuberginnException e) {
-                    e.printStackTrace();
-                }
+                    try {
+                        verifierChampReservation(request, response);
+
+                    } catch (AuberginnException e) {
+                        e.printStackTrace();
+                    }
+
                 executerTransactionReservation(transaction,request,response);
 
                 break;
 
             case appelVersGestionCommodite:
+                System.out.println("Servlet Gestion : appel gestion commodite");
+                transaction = determinerTransaction(request,response);
+                if (transaction == ajoutCommodite) {
+                    try {
+                        verifierChampCommodite(request, response);
+                    } catch (AuberginnException e) {
+                        e.printStackTrace();
+                    }
+                }
+                executerTransactionCommodite(transaction,request,response);
                 break;
-
         }
-
     }
 
     public void loadTransaction()
@@ -103,6 +122,9 @@ public class Gestion extends HttpServlet
         //transactions
         transactions = new ArrayList<>();
         transactions.add(ajoutChambre);
+        transactions.add(ajoutCommodite);
+        transactions.add(ajoutService);
+        transactions.add(enleverService);
         transactions.add(SupprimerChambre);
         transactions.add(ajoutReservation);
 
@@ -167,6 +189,85 @@ public class Gestion extends HttpServlet
 
     }
 
+    public void executerTransactionCommodite(String transaction,HttpServletRequest request,HttpServletResponse response) throws ServletException, IOException {
+
+        System.out.println("Servlet Gestion : transaction commodite");
+        HttpSession session = request.getSession();
+        GestionAubergeInn aubergeUpdate = AuberginnHelper.getBiblioUpdate(session);
+
+        switch(transaction)
+        {
+            case ajoutCommodite:
+                synchronized (aubergeUpdate)
+                {
+                    try {
+                        aubergeUpdate.getGestionCommodite().ajouterCommodite(Integer.parseInt(request.getParameter("commoditeId")),
+                                request.getParameter("description"), Float.parseFloat(request.getParameter("prixSurplus")),request,response);
+                        randomVal = request.getParameter("custId");
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+                redirectionVersAuteurAppel(request,response,appelVersGestionCommodite);
+
+                break;
+
+            case ajoutService:
+                synchronized (aubergeUpdate)
+                {
+                    try {
+                        if (request.getParameter("SelectChambre") == null) {
+                            List<String> listeMessageErreur = new LinkedList<String>();
+                            listeMessageErreur.add("Veuillez choisir une chambre");
+                            request.setAttribute("commoditeId", request.getParameter("commoditeId"));
+                            request.setAttribute("typeAction", "inclure");
+                            request.setAttribute("listeMessageErreur", listeMessageErreur);
+                            RequestDispatcher dispatcher = request.getRequestDispatcher("/WEB-INF/inclureCommodite.jsp");
+                            dispatcher.forward(request, response);
+                        }
+                        else {
+                            System.out.println("Servlet gestion : ajout service");
+                            aubergeUpdate.getGestionService().inclureCommodite(Integer.parseInt(request.getParameter("SelectChambre")),
+                                    Integer.parseInt(request.getParameter("commoditeId")), request, response);
+                            randomVal = request.getParameter("custId");
+                        }
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+                redirectionVersAuteurAppel(request,response,appelVersGestionCommodite);
+
+                break;
+
+            case enleverService:
+                synchronized (aubergeUpdate)
+                {
+                    try {
+                        if (request.getParameter("SelectChambre") == null) {
+                            List<String> listeMessageErreur = new LinkedList<String>();
+                            listeMessageErreur.add("Veuillez choisir une chambre");
+                            request.setAttribute("commoditeId", request.getParameter("commoditeId"));
+                            request.setAttribute("typeAction", "enlever");
+                            request.setAttribute("listeMessageErreur", listeMessageErreur);
+                            RequestDispatcher dispatcher = request.getRequestDispatcher("/WEB-INF/inclureCommodite.jsp");
+                            dispatcher.forward(request, response);
+                        }
+                        else {
+                            System.out.println("Servlet gestion : enlever service");
+                            aubergeUpdate.getGestionService().enleverCommodite(Integer.parseInt(request.getParameter("SelectChambre")),
+                                    Integer.parseInt(request.getParameter("commoditeId")), request, response);
+                            randomVal = request.getParameter("custId");
+                        }
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+                redirectionVersAuteurAppel(request,response,appelVersGestionCommodite);
+
+                break;
+        }
+    }
+
 
     public void executerTransactionReservation(String transaction,HttpServletRequest request,HttpServletResponse response) throws ServletException, IOException {
 
@@ -210,6 +311,12 @@ public class Gestion extends HttpServlet
             dispatcher.forward(request, response);
         }
 
+        if(Objects.equals(auteurAppel, appelVersGestionCommodite))
+        {
+            RequestDispatcher dispatcher = request.getRequestDispatcher("/WEB-INF/GererCommodite.jsp");
+            dispatcher.forward(request, response);
+        }
+
     }
 
     public void verifierChampChambre(HttpServletRequest request,HttpServletResponse response) throws AuberginnException, ServletException, IOException {
@@ -248,6 +355,36 @@ public class Gestion extends HttpServlet
 
 
 
+    }
+
+    public void verifierChampCommodite(HttpServletRequest request,HttpServletResponse response) throws AuberginnException, ServletException, IOException {
+
+        try {
+            String commoditeId = request.getParameter("commoditeId");
+            String desc = request.getParameter("description");
+            String prix = request.getParameter("prixSurplus");
+
+
+            if (commoditeId == null || commoditeId.equals(""))
+                throw new AuberginnException("Vous devez entrer un id pour la commodité");
+
+            if (desc == null || desc.equals(""))
+                throw new AuberginnException("Vous devez entrer une description pour la commodité");
+
+            if (prix == null || prix.equals("")) {
+                throw new AuberginnException("Vous devez entrer un prix de surplus");
+            }
+        }
+        catch (Exception e)
+        {
+            List<String> listeMessageErreur = new LinkedList<String>();
+            listeMessageErreur.add(e.getMessage());
+            request.setAttribute("listeMessageErreur", listeMessageErreur);
+            RequestDispatcher dispatcher = request.getRequestDispatcher("/WEB-INF/ajoutCommodite.jsp");
+            dispatcher.forward(request, response);
+            // pour déboggage seulement : afficher tout le contenu de l'exception
+            e.printStackTrace();;
+        }
     }
 
     public void verifierChampReservation(HttpServletRequest request,HttpServletResponse response) throws AuberginnException, ServletException, IOException {

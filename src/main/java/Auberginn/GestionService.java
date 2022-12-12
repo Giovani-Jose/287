@@ -1,6 +1,12 @@
 package Auberginn;
 
 
+import javax.servlet.RequestDispatcher;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.util.LinkedList;
+import java.util.List;
+
 public class GestionService
 {
     private final TableCommodites commodite;
@@ -20,7 +26,7 @@ public class GestionService
     }
 
 
-    public void inclureCommodite(int idChambre, int idCommodite) throws Exception
+    public void inclureCommodite(int idChambre, int idCommodite, HttpServletRequest request, HttpServletResponse response) throws Exception
     {
         try
         {
@@ -49,12 +55,21 @@ public class GestionService
 
         catch (Exception e)
         {
+            List<String> listeMessageErreur = new LinkedList<String>();
+            listeMessageErreur.add(e.getMessage());
+            request.setAttribute("idCommodite", idCommodite);
+            request.setAttribute("typeAction", "inclure");
+            request.setAttribute("listeMessageErreur", listeMessageErreur);
+            RequestDispatcher dispatcher = request.getRequestDispatcher("/WEB-INF/inclureCommodite.jsp");
+            dispatcher.forward(request, response);
+            // pour déboggage seulement : afficher tout le contenu de l'exception
+            e.printStackTrace();;
             cx.rollback();
             throw e;
         }
     }
 
-    public void enleverCommodite(int idChambre, int idCommodite) throws Exception
+    public void enleverCommodite(int idChambre, int idCommodite, HttpServletRequest request, HttpServletResponse response) throws Exception
     {
         try
         {
@@ -85,6 +100,15 @@ public class GestionService
         }
         catch (Exception e)
         {
+            List<String> listeMessageErreur = new LinkedList<String>();
+            listeMessageErreur.add(e.getMessage());
+            request.setAttribute("idCommodite", idCommodite);
+            request.setAttribute("typeAction", "enlever");
+            request.setAttribute("listeMessageErreur", listeMessageErreur);
+            RequestDispatcher dispatcher = request.getRequestDispatcher("/WEB-INF/inclureCommodite.jsp");
+            dispatcher.forward(request, response);
+            // pour déboggage seulement : afficher tout le contenu de l'exception
+            e.printStackTrace();;
             cx.rollback();
             throw e;
         }
